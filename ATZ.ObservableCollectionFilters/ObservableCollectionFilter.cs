@@ -38,7 +38,8 @@ namespace ATZ.ObservableCollectionFilters
             _sourceCollectionChangeHandlers = new Dictionary<NotifyCollectionChangedAction,Action<NotifyCollectionChangedEventArgs>>
             {
                 { NotifyCollectionChangedAction.Add, HandleAdditionToItemsSource },
-                { NotifyCollectionChangedAction.Move, HandleMoveInItemsSource }
+                { NotifyCollectionChangedAction.Move, HandleMoveInItemsSource },
+                { NotifyCollectionChangedAction.Remove, HandleRemovalFromItemsSource }
             };
         }
 
@@ -65,6 +66,12 @@ namespace ATZ.ObservableCollectionFilters
             var newTargetIndex = TranslateSourceIndex(e.NewStartingIndex);
             
             FilteredItems.Move(oldTargetIndex, newTargetIndex);
+        }
+
+        private void HandleRemovalFromItemsSource(NotifyCollectionChangedEventArgs e)
+        {
+            var item = e.OldItems[0] as TItem;
+            FilteredItems.Remove(item);
         }
 
         private bool ItemPassesFilter(TItem item) => FilterFunction != null && FilterFunction(item);

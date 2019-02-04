@@ -186,5 +186,25 @@ namespace ATZ.ObservableCollectionFilters.Tests
             filter.ItemsSource.Move(5, 2);
             VerifyFilteredItems(filter, new[] { 2, 6, 4 });
         }
+
+        [Test]
+        public void RemoveItemFromFilteredItemsWhenRemovedFromItemsSource()
+        {
+            var filter = CreateFilterWithItems(new[] { 1, 2, 3, 4 });
+            VerifyFilteredItems(filter, new[] { 2, 4 });
+            
+            filter.ItemsSource.RemoveAt(1);
+            VerifyFilteredItems(filter, new[] { 4 });
+        }
+
+        [Test]
+        public void IgnoreItemRemovalIfNotPresentInFilteredItems()
+        {
+            var filter = CreateFilterWithItems(new[] { 1, 2, 3, 4 });
+            VerifyFilteredItems(filter, new[] { 2, 4 });
+            
+            filter.ItemsSource.RemoveAt(0);
+            VerifyFilteredItems(filter, new[] { 2, 4 });
+        }
     }
 }
