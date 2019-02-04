@@ -64,11 +64,6 @@ namespace ATZ.ObservableCollectionFilters
 
         private int TranslateSourceIndex(int sourceIndex)
         {
-            if (sourceIndex >= FilteredItems.Count)
-            {
-                return FilteredItems.Count;
-            }
-
             var referenceIndex = sourceIndex - 1;
             while (referenceIndex > -1 && !FilterFunction(_itemsSource[referenceIndex]))
             {
