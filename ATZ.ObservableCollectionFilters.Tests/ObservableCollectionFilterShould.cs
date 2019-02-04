@@ -41,7 +41,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
 
         private void VerifyFilteredItems(ObservableCollectionFilter<TestClass> filter, int[] correctValues)
         {
-            filter.FilteredItems.Select(_ => _.Value).Should().BeEquivalentTo(correctValues).And.HaveCount(correctValues.Length);
+            filter.FilteredItems.Select(_ => _.Value).Should().ContainInOrder(correctValues).And.HaveCount(correctValues.Length);
         }
 
         private void VerifySourceItemAddition(
@@ -165,6 +165,26 @@ namespace ATZ.ObservableCollectionFilters.Tests
             VerifySourceItemAddition(new[] { 2, 4 }, new[] { 2, 4 }, 2, 6);        // 2, 4, (6)
             VerifySourceItemAddition(new[] { 2, 4, 5 }, new[] { 2, 4 }, 3, 6);     // 2, 4, 5,(6)
             VerifySourceItemAddition(new[] { 2, 4, 7 }, new[] { 2, 4 }, 2, 6);     // 2, 4, (6), 7
+        }
+
+        [Test]
+        public void IgnoreSourceMoveEventIfItemIsNotInTheFilteredItems()
+        {
+            var filter = CreateFilterWithItems(new[] { 1, 3, 4, 6 });
+            VerifyFilteredItems(filter, new[] { 4, 6 });
+            
+            filter.ItemsSource.Move(1, 0);
+            VerifyFilteredItems(filter, new[] { 4, 6 });
+        }
+
+        [Test]
+        public void MoveItemInFilteredItemsWhenMovedInItemsSource()
+        {
+            var filter = CreateFilterWithItems(new[] { 1, 2, 3, 4, 5, 6, 7 });
+            VerifyFilteredItems(filter, new[] { 2, 4, 6 });
+            
+            filter.ItemsSource.Move(5, 2);
+            VerifyFilteredItems(filter, new[] { 2, 6, 4 });
         }
     }
 }
