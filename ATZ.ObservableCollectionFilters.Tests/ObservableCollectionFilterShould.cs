@@ -39,9 +39,9 @@ namespace ATZ.ObservableCollectionFilters.Tests
             return filter;
         }
 
-        private void VerifyFilteredItems(ObservableCollectionFilter<TestClass> filter, int[] correctValues)
+        private void VerifyItems(ObservableCollection<TestClass> items, int[] correctValues)
         {
-            filter.FilteredItems.Select(_ => _.Value).Should().ContainInOrder(correctValues).And.HaveCount(correctValues.Length);
+            items.Select(_ => _.Value).Should().ContainInOrder(correctValues).And.HaveCount(correctValues.Length);
         }
 
         private void VerifySourceItemAddition(
@@ -49,10 +49,10 @@ namespace ATZ.ObservableCollectionFilters.Tests
             int insertPosition, int insertValue)
         {
             var filter = CreateFilterWithItems(initialSourceValues);
-            VerifyFilteredItems(filter, initialFilteredValues);
+            VerifyItems(filter.FilteredItems, initialFilteredValues);
         
             filter.ItemsSource.Insert(insertPosition, _items[insertValue]);
-            VerifyFilteredItems(filter, new[] { 2, 4, 6 });
+            VerifyItems(filter.FilteredItems, new[] { 2, 4, 6 });
         }
 
         [Test]
@@ -171,40 +171,40 @@ namespace ATZ.ObservableCollectionFilters.Tests
         public void IgnoreSourceMoveEventIfItemIsNotInTheFilteredItems()
         {
             var filter = CreateFilterWithItems(new[] { 1, 3, 4, 6 });
-            VerifyFilteredItems(filter, new[] { 4, 6 });
+            VerifyItems(filter.FilteredItems, new[] { 4, 6 });
             
             filter.ItemsSource.Move(1, 0);
-            VerifyFilteredItems(filter, new[] { 4, 6 });
+            VerifyItems(filter.FilteredItems, new[] { 4, 6 });
         }
 
         [Test]
         public void MoveItemInFilteredItemsWhenMovedInItemsSource()
         {
             var filter = CreateFilterWithItems(new[] { 1, 2, 3, 4, 5, 6, 7 });
-            VerifyFilteredItems(filter, new[] { 2, 4, 6 });
+            VerifyItems(filter.FilteredItems, new[] { 2, 4, 6 });
             
             filter.ItemsSource.Move(5, 2);
-            VerifyFilteredItems(filter, new[] { 2, 6, 4 });
+            VerifyItems(filter.FilteredItems, new[] { 2, 6, 4 });
         }
 
         [Test]
         public void RemoveItemFromFilteredItemsWhenRemovedFromItemsSource()
         {
             var filter = CreateFilterWithItems(new[] { 1, 2, 3, 4 });
-            VerifyFilteredItems(filter, new[] { 2, 4 });
+            VerifyItems(filter.FilteredItems, new[] { 2, 4 });
             
             filter.ItemsSource.RemoveAt(1);
-            VerifyFilteredItems(filter, new[] { 4 });
+            VerifyItems(filter.FilteredItems, new[] { 4 });
         }
 
         [Test]
         public void IgnoreItemRemovalIfNotPresentInFilteredItems()
         {
             var filter = CreateFilterWithItems(new[] { 1, 2, 3, 4 });
-            VerifyFilteredItems(filter, new[] { 2, 4 });
+            VerifyItems(filter.FilteredItems, new[] { 2, 4 });
             
             filter.ItemsSource.RemoveAt(0);
-            VerifyFilteredItems(filter, new[] { 2, 4 });
+            VerifyItems(filter.FilteredItems, new[] { 2, 4 });
         }
 
         [Test]
@@ -213,7 +213,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
             var filter = CreateFilterWithItems(new[] { 2 });
 
             filter.ItemsSource[0] = _items[4];
-            VerifyFilteredItems(filter, new[] { 4 });
+            VerifyItems(filter.FilteredItems, new[] { 4 });
         }
 
         [Test]
@@ -222,7 +222,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
             var filter = CreateFilterWithItems(new[] { 1 });
 
             filter.ItemsSource[0] = _items[4];
-            VerifyFilteredItems(filter, new[] { 4 });
+            VerifyItems(filter.FilteredItems, new[] { 4 });
         }
 
         [Test]
@@ -231,7 +231,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
             var filter = CreateFilterWithItems(new[] { 2 });
 
             filter.ItemsSource[0] = _items[1];
-            VerifyFilteredItems(filter, Array.Empty<int>());
+            VerifyItems(filter.FilteredItems, Array.Empty<int>());
         }
 
         [Test]
@@ -240,7 +240,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
             var filter = CreateFilterWithItems(new[] { 3 });
 
             filter.ItemsSource[0] = _items[1];
-            VerifyFilteredItems(filter, Array.Empty<int>());
+            VerifyItems(filter.FilteredItems, Array.Empty<int>());
         }
 
         [Test]
@@ -249,7 +249,34 @@ namespace ATZ.ObservableCollectionFilters.Tests
             var filter = CreateFilterWithItems(new[] { 4 });
             
             filter.ItemsSource.Clear();
-            VerifyFilteredItems(filter, Array.Empty<int>());
+            VerifyItems(filter.FilteredItems, Array.Empty<int>());
+        }
+
+        private void VerifyFilteredItemAddition(
+            int[] initialValues, 
+            int position, int item, 
+            int[] correctItemsSource, int[] correctFilteredItems)
+        {
+            var filter = CreateFilterWithItems(initialValues);
+            
+            filter.FilteredItems.Insert(position, _items[item]);
+            VerifyItems(filter.ItemsSource, correctItemsSource);
+            VerifyItems(filter.FilteredItems, correctFilteredItems);
+        }
+
+        [Test]
+        public void VerifyFilteredItemAdditions()
+        {
+            VerifyFilteredItemAddition(Array.Empty<int>(), 0, 1, Array.Empty<int>(), Array.Empty<int>());    // cancelling
+            
+            VerifyFilteredItemAddition(new[] { 4, 6 }, 0, 2, new[] { 2, 4, 6 }, new[] { 2, 4, 6 });          // (2), 4, 6
+            VerifyFilteredItemAddition(new[] { 3, 4, 6 }, 0, 2, new[] { 2, 3, 4, 6 }, new[] { 2, 4, 6 });    // (2), 3!, 4, 6
+            
+            VerifyFilteredItemAddition(new[] { 2, 6 }, 1, 4, new [] { 2, 4, 6 }, new[] { 2, 4, 6 });         // 2, (4), 6
+            VerifyFilteredItemAddition(new[] { 2, 5, 6 }, 1, 4, new[] { 2, 4, 5, 6 }, new[] { 2, 4, 6 });    // 2, (4), 5!, 6
+            
+            VerifyFilteredItemAddition(new[] { 2, 4 }, 2, 6, new[] { 2, 4, 6 }, new[] { 2, 4, 6 });          // 2, 4, (6)
+            VerifyFilteredItemAddition(new[] { 2, 4, 7 }, 2, 6, new[] { 2, 4, 6, 7 }, new[] { 2, 4, 6 });    // 2, 4, (6), 7!
         }
     }
 }

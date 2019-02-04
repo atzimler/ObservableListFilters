@@ -8,8 +8,10 @@ namespace ATZ.ObservableCollectionFilters
     public class ObservableCollectionFilter<TItem>
         where TItem : class
     {
+        private readonly Dictionary<NotifyCollectionChangedAction, Action<NotifyCollectionChangedEventArgs>> _filterCollectionChangeHandlers;
+        private bool _internalChange;
         private ObservableCollection<TItem> _itemsSource;
-        private Dictionary<NotifyCollectionChangedAction, Action<NotifyCollectionChangedEventArgs>> _sourceCollectionChangeHandlers;
+        private readonly Dictionary<NotifyCollectionChangedAction, Action<NotifyCollectionChangedEventArgs>> _sourceCollectionChangeHandlers;
         
         public Func<TItem, bool> FilterFunction { get; set; } = _ => true;
         public ObservableCollection<TItem> FilteredItems { get; } = new ObservableCollection<TItem>();
@@ -43,6 +45,37 @@ namespace ATZ.ObservableCollectionFilters
                 { NotifyCollectionChangedAction.Replace, HandleReplacementInItemsSource },
                 { NotifyCollectionChangedAction.Reset, _ => HandleResetOnItemsSource() }
             };
+            
+            _filterCollectionChangeHandlers = new Dictionary<NotifyCollectionChangedAction, Action<NotifyCollectionChangedEventArgs>>
+            {
+                { NotifyCollectionChangedAction.Add, HandleAdditionToFilteredItems }
+            };
+
+            FilteredItems.CollectionChanged += FilteredCollectionChanged;
+        }
+
+        private void FilteredCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (!_filterCollectionChangeHandlers.ContainsKey(e.Action) || _internalChange)
+            {
+                return;
+            }
+
+            _internalChange = true;
+            _filterCollectionChangeHandlers[e.Action](e);
+            _internalChange = false;
+        }
+
+        private void HandleAdditionToFilteredItems(NotifyCollectionChangedEventArgs e)
+        {
+            var item = e.NewItems[0] as TItem;
+            if (!ItemPassesFilter(item))
+            {
+                FilteredItems.RemoveAt(e.NewStartingIndex);
+                return;
+            }
+
+            ItemsSource.Insert(TranslateTargetIndex(e.NewStartingIndex), item);
         }
 
         private void HandleAdditionToItemsSource(NotifyCollectionChangedEventArgs e)
@@ -111,12 +144,14 @@ namespace ATZ.ObservableCollectionFilters
         
         private void SourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (!_sourceCollectionChangeHandlers.ContainsKey(e.Action))
+            if (!_sourceCollectionChangeHandlers.ContainsKey(e.Action) || _internalChange)
             {
                 return;
             }
 
+            _internalChange = true;
             _sourceCollectionChangeHandlers[e.Action](e);
+            _internalChange = false;
         }
 
         private int TranslateSourceIndex(int sourceIndex)
@@ -135,6 +170,18 @@ namespace ATZ.ObservableCollectionFilters
             var referenceItem = _itemsSource[referenceIndex];
             var targetReferenceIndex = FilteredItems.IndexOf(referenceItem);
             return targetReferenceIndex + 1;
+        }
+
+        private int TranslateTargetIndex(int targetIndex)
+        {
+            if (targetIndex == 0)
+            {
+                return 0;
+            }
+
+            var referenceItem = FilteredItems[targetIndex - 1];
+            var referenceIndex = _itemsSource.IndexOf(referenceItem);
+            return referenceIndex + 1;
         }
     }
 }
