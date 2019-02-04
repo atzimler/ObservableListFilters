@@ -40,7 +40,8 @@ namespace ATZ.ObservableCollectionFilters
                 { NotifyCollectionChangedAction.Add, HandleAdditionToItemsSource },
                 { NotifyCollectionChangedAction.Move, HandleMoveInItemsSource },
                 { NotifyCollectionChangedAction.Remove, HandleRemovalFromItemsSource },
-                { NotifyCollectionChangedAction.Replace, HandleReplacementInItemsSource }
+                { NotifyCollectionChangedAction.Replace, HandleReplacementInItemsSource },
+                { NotifyCollectionChangedAction.Reset, _ => HandleResetOnItemsSource() }
             };
         }
 
@@ -99,6 +100,11 @@ namespace ATZ.ObservableCollectionFilters
             {
                 FilteredItems[index] = newItem;
             }
+        }
+
+        private void HandleResetOnItemsSource()
+        {
+            FilteredItems.Clear();
         }
         
         private bool ItemPassesFilter(TItem item) => FilterFunction != null && FilterFunction(item);

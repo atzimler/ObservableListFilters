@@ -242,7 +242,14 @@ namespace ATZ.ObservableCollectionFilters.Tests
             filter.ItemsSource[0] = _items[1];
             VerifyFilteredItems(filter, Array.Empty<int>());
         }
-        
-        // TODO: Replace when neither item pass the filter.
+
+        [Test]
+        public void ClearFilteredItemsWhenClearingItemsSource()
+        {
+            var filter = CreateFilterWithItems(new[] { 4 });
+            
+            filter.ItemsSource.Clear();
+            VerifyFilteredItems(filter, Array.Empty<int>());
+        }
     }
 }
