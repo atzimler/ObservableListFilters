@@ -9,7 +9,7 @@ namespace ATZ.ObservableCollectionFilters
         where TItem : class
     {
         private readonly Dictionary<NotifyCollectionChangedAction, Action<NotifyCollectionChangedEventArgs>> _filterCollectionChangeHandlers;
-        private InternalChange _internalChange = new InternalChange();
+        private readonly InternalChange _internalChange = new InternalChange();
         private ObservableCollection<TItem> _itemsSource;
         private readonly Dictionary<NotifyCollectionChangedAction, Action<NotifyCollectionChangedEventArgs>> _sourceCollectionChangeHandlers;
         
@@ -21,6 +21,11 @@ namespace ATZ.ObservableCollectionFilters
             get => _itemsSource;
             set
             {
+                if (_itemsSource == value)
+                {
+                    return;
+                }
+                
                 if (_itemsSource != null)
                 {
                     _itemsSource.CollectionChanged -= SourceCollectionChanged;
@@ -32,6 +37,8 @@ namespace ATZ.ObservableCollectionFilters
                 {
                     _itemsSource.CollectionChanged += SourceCollectionChanged;
                 }
+                
+                FilteredItems.Clear();
             }
         }
 
@@ -91,13 +98,13 @@ namespace ATZ.ObservableCollectionFilters
         private void HandleAdditionToFilteredItems(NotifyCollectionChangedEventArgs e)
         {
             var item = e.NewItems[0] as TItem;
-            if (!ItemPassesFilter(item))
+            if (!ItemPassesFilter(item) || _itemsSource == null)
             {
                 FilteredItems.RemoveAt(e.NewStartingIndex);
                 return;
             }
 
-            ItemsSource.Insert(TranslateTargetIndex(e.NewStartingIndex, -1), item);
+            _itemsSource.Insert(TranslateTargetIndex(e.NewStartingIndex, -1), item);
         }
 
         private void HandleAdditionToItemsSource(NotifyCollectionChangedEventArgs e)
