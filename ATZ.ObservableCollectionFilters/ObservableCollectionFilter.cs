@@ -51,12 +51,24 @@ namespace ATZ.ObservableCollectionFilters
                 { NotifyCollectionChangedAction.Add, HandleAdditionToFilteredItems },
                 { NotifyCollectionChangedAction.Move, HandleMoveInFilteredItems },
                 { NotifyCollectionChangedAction.Remove, HandleRemovalFromFilteredItems },
-                { NotifyCollectionChangedAction.Replace, HandleReplacementInFilteredItems }
+                { NotifyCollectionChangedAction.Replace, HandleReplacementInFilteredItems },
+                { NotifyCollectionChangedAction.Reset, _ => HandleResetOnFilteredItems() }
             };
 
             FilteredItems.CollectionChanged += FilteredCollectionChanged;
         }
 
+        private void BuildFilteredItems()
+        {
+            foreach (var item in _itemsSource)
+            {
+                if (FilterFunction(item))
+                {
+                    FilteredItems.Add(item);
+                }
+            }
+        }
+        
         private void FilteredCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (!_filterCollectionChangeHandlers.ContainsKey(e.Action) || _internalChange)
@@ -165,13 +177,23 @@ namespace ATZ.ObservableCollectionFilters
             }
         }
 
+        private void HandleResetOnFilteredItems()
+        {
+            if (_itemsSource == null || FilterFunction == null)
+            {
+                return;
+            }
+            
+            BuildFilteredItems();
+        }
+        
         private void HandleResetOnItemsSource()
         {
             FilteredItems.Clear();
         }
         
         private bool ItemPassesFilter(TItem item) => FilterFunction != null && FilterFunction(item);
-        
+
         private void SourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (!_sourceCollectionChangeHandlers.ContainsKey(e.Action) || _internalChange)

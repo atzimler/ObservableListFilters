@@ -351,7 +351,42 @@ namespace ATZ.ObservableCollectionFilters.Tests
             VerifyItems(filter.FilteredItems, new[] { 2, 6 });
             VerifyItems(filter.ItemsSource, new[] { 2, 3, 6 });
         }
-        
+
+        [Test]
+        public void RebuildFilteredItemsWhenCleared()
+        {
+            var filter = CreateFilterWithItems(new[] { 2, 4, 6 });
+            
+            filter.FilteredItems.Clear();
+            VerifyItems(filter.FilteredItems, new[] { 2, 4, 6 });
+            VerifyItems(filter.ItemsSource, new[] { 2, 4, 6 });
+        }
+
+        [Test]
+        public void NotCrashWhenItemsSourceIsNullAndFilteredItemsIsCleared()
+        {
+            var filter = new ObservableCollectionFilter<TestClass>();
+            filter.FilterFunction.Should().NotBeNull();
+            filter.ItemsSource.Should().BeNull();
+
+            filter.FilteredItems.Clear();
+            filter.FilteredItems.Should().BeEmpty();
+        }
+
+        [Test]
+        public void NotCrashWhenFilterFunctionIsNullAndFilteredItemsIsCleared()
+        {
+            var filter = new ObservableCollectionFilter<TestClass>
+            {
+                FilterFunction = null,
+                ItemsSource = new ObservableCollection<TestClass>()
+            };
+            filter.ItemsSource.Add(_items[2]);
+            
+            filter.FilteredItems.Clear();
+            filter.FilteredItems.Should().BeEmpty();
+        }
+
         // TODO: When changing the ItemsSource property it should change the filter.
         // TODO: Check addition to the filter when ItemsSource == null.
     }
