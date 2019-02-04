@@ -322,5 +322,14 @@ namespace ATZ.ObservableCollectionFilters.Tests
             filter.ItemsSource.Move(3, 3);
             VerifyItems(filter.FilteredItems, new[] { 2, 4, 6 });
         }
+
+        [Test]
+        public void RemoveItemFromItemsSourceWhenRemovedFromFilteredItems()
+        {
+            var filter = CreateFilterWithItems(new[] { 2, 4, 6 });
+            filter.FilteredItems.RemoveAt(1);
+            
+            VerifyItems(filter.ItemsSource, new[] { 2, 6 });
+        }
     }
 }
