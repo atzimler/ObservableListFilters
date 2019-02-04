@@ -206,5 +206,43 @@ namespace ATZ.ObservableCollectionFilters.Tests
             filter.ItemsSource.RemoveAt(0);
             VerifyFilteredItems(filter, new[] { 2, 4 });
         }
+
+        [Test]
+        public void ReplaceItemInFilteredListWhenNewItemPassesTheFilter()
+        {
+            var filter = CreateFilterWithItems(new[] { 2 });
+
+            filter.ItemsSource[0] = _items[4];
+            VerifyFilteredItems(filter, new[] { 4 });
+        }
+
+        [Test]
+        public void AddItemToFilteredListWhenReplacingAPreviousItemThatWasNotPassingTheFilter()
+        {
+            var filter = CreateFilterWithItems(new[] { 1 });
+
+            filter.ItemsSource[0] = _items[4];
+            VerifyFilteredItems(filter, new[] { 4 });
+        }
+
+        [Test]
+        public void RemoveItemFromFilteredListWhenReplacingAPreviouslyPassingItemWithANonPassingOne()
+        {
+            var filter = CreateFilterWithItems(new[] { 2 });
+
+            filter.ItemsSource[0] = _items[1];
+            VerifyFilteredItems(filter, Array.Empty<int>());
+        }
+
+        [Test]
+        public void IgnoreItemReplacementWhenBothOldAndNewItemAreNotPassingTheFilter()
+        {
+            var filter = CreateFilterWithItems(new[] { 3 });
+
+            filter.ItemsSource[0] = _items[1];
+            VerifyFilteredItems(filter, Array.Empty<int>());
+        }
+        
+        // TODO: Replace when neither item pass the filter.
     }
 }
