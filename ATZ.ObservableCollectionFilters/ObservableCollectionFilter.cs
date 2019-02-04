@@ -9,7 +9,7 @@ namespace ATZ.ObservableCollectionFilters
         where TItem : class
     {
         private readonly Dictionary<NotifyCollectionChangedAction, Action<NotifyCollectionChangedEventArgs>> _filterCollectionChangeHandlers;
-        private bool _internalChange;
+        private InternalChange _internalChange = new InternalChange();
         private ObservableCollection<TItem> _itemsSource;
         private readonly Dictionary<NotifyCollectionChangedAction, Action<NotifyCollectionChangedEventArgs>> _sourceCollectionChangeHandlers;
         
@@ -58,6 +58,15 @@ namespace ATZ.ObservableCollectionFilters
             FilteredItems.CollectionChanged += FilteredCollectionChanged;
         }
 
+        private void AddItemToFilteredItemsFromItemsSourceAt(int index)
+        {
+            var item = _itemsSource[index];
+            if (FilteredItems.IndexOf(item) == -1)
+            {
+                FilteredItems.Insert(TranslateSourceIndex(index), item);
+            }
+        }
+
         private void BuildFilteredItems()
         {
             foreach (var item in _itemsSource)
@@ -71,14 +80,12 @@ namespace ATZ.ObservableCollectionFilters
         
         private void FilteredCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (!_filterCollectionChangeHandlers.ContainsKey(e.Action) || _internalChange)
+            if (!_filterCollectionChangeHandlers.ContainsKey(e.Action))
             {
                 return;
             }
 
-            _internalChange = true;
-            _filterCollectionChangeHandlers[e.Action](e);
-            _internalChange = false;
+            _internalChange.Execute(() => _filterCollectionChangeHandlers[e.Action](e));
         }
 
         private void HandleAdditionToFilteredItems(NotifyCollectionChangedEventArgs e)
@@ -101,7 +108,7 @@ namespace ATZ.ObservableCollectionFilters
                 return;
             }
             
-            FilteredItems.Insert(TranslateSourceIndex(e.NewStartingIndex), item);
+            AddItemToFilteredItemsFromItemsSourceAt(e.NewStartingIndex);
         }
 
         private void HandleMoveInFilteredItems(NotifyCollectionChangedEventArgs e)
@@ -134,8 +141,7 @@ namespace ATZ.ObservableCollectionFilters
         
         private void HandleRemovalFromItemsSource(NotifyCollectionChangedEventArgs e)
         {
-            var item = e.OldItems[0] as TItem;
-            FilteredItems.Remove(item);
+            RemoveItemFromFilteredItems(e.OldItems[0] as TItem);
         }
 
         private void HandleReplacementInFilteredItems(NotifyCollectionChangedEventArgs e)
@@ -194,16 +200,19 @@ namespace ATZ.ObservableCollectionFilters
         
         private bool ItemPassesFilter(TItem item) => FilterFunction != null && FilterFunction(item);
 
+        private void RemoveItemFromFilteredItems(TItem item)
+        {
+            FilteredItems.Remove(item);
+        }
+        
         private void SourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (!_sourceCollectionChangeHandlers.ContainsKey(e.Action) || _internalChange)
+            if (!_sourceCollectionChangeHandlers.ContainsKey(e.Action))
             {
                 return;
             }
 
-            _internalChange = true;
-            _sourceCollectionChangeHandlers[e.Action](e);
-            _internalChange = false;
+            _internalChange.Execute(() => _sourceCollectionChangeHandlers[e.Action](e));
         }
 
         private int TranslateSourceIndex(int sourceIndex)
@@ -239,6 +248,18 @@ namespace ATZ.ObservableCollectionFilters
             var referenceItem = FilteredItems[targetIndex + referencePosition];
             var referenceIndex = _itemsSource.IndexOf(referenceItem);
             return referenceIndex - referencePosition;
+        }
+
+        public void ItemUpdated(int index)
+        {
+            if (ItemPassesFilter(_itemsSource[index]))
+            {
+                AddItemToFilteredItemsFromItemsSourceAt(index);
+            }
+            else
+            {
+                RemoveItemFromFilteredItems(_itemsSource[index]);
+            }
         }
     }
 }
