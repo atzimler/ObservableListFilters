@@ -39,6 +39,34 @@ namespace ATZ.ObservableCollectionFilters.Tests
             return filter;
         }
 
+        private void VerifyFilteredItemAddition(
+            int[] initialValues, 
+            int position, int item, 
+            int[] correctItemsSource, int[] correctFilteredItems)
+        {
+            var filter = CreateFilterWithItems(initialValues);
+            
+            filter.FilteredItems.Insert(position, _items[item]);
+            VerifyItems(filter.ItemsSource, correctItemsSource);
+            VerifyItems(filter.FilteredItems, correctFilteredItems);
+        }
+
+        private void VerifyFilteredItemUpdate(int newValue, int[] correctItemsSource, int[] correctFilteredItems)
+        {
+            var filter = new ObservableCollectionFilter<TestClass>
+            {
+                FilterFunction = _ => _.Value % 2 == 0,
+                ItemsSource = new ObservableCollection<TestClass>()
+            };
+
+            filter.ItemsSource.Add(new TestClass { Value = 2 });
+            filter.ItemsSource[0].Value = newValue;
+            filter.FilteredItemUpdated(0);
+            
+            VerifyItems(filter.FilteredItems, correctFilteredItems);
+            VerifyItems(filter.ItemsSource, correctItemsSource);
+        }
+
         private void VerifyItems(ObservableCollection<TestClass> items, int[] correctValues)
         {
             items.Select(_ => _.Value).Should().ContainInOrder(correctValues).And.HaveCount(correctValues.Length);
@@ -53,6 +81,22 @@ namespace ATZ.ObservableCollectionFilters.Tests
         
             filter.ItemsSource.Insert(insertPosition, _items[insertValue]);
             VerifyItems(filter.FilteredItems, new[] { 2, 4, 6 });
+        }
+
+        private void VerifyItemsSourceItemUpdate(int initialValue, int newValue, int[] correctItemsSource, int[] correctFilteredItems)
+        {
+            var filter = new ObservableCollectionFilter<TestClass>
+            {
+                FilterFunction = _ => _.Value % 2 == 0,
+                ItemsSource = new ObservableCollection<TestClass>()
+            };
+            
+            filter.ItemsSource.Add(new TestClass { Value = initialValue });
+            filter.ItemsSource[0].Value = newValue;
+            filter.SourceItemUpdated(0);
+            
+            VerifyItems(filter.FilteredItems, correctFilteredItems);
+            VerifyItems(filter.ItemsSource, correctItemsSource);
         }
 
         [Test]
@@ -252,18 +296,6 @@ namespace ATZ.ObservableCollectionFilters.Tests
             VerifyItems(filter.FilteredItems, Array.Empty<int>());
         }
 
-        private void VerifyFilteredItemAddition(
-            int[] initialValues, 
-            int position, int item, 
-            int[] correctItemsSource, int[] correctFilteredItems)
-        {
-            var filter = CreateFilterWithItems(initialValues);
-            
-            filter.FilteredItems.Insert(position, _items[item]);
-            VerifyItems(filter.ItemsSource, correctItemsSource);
-            VerifyItems(filter.FilteredItems, correctFilteredItems);
-        }
-
         [Test]
         public void VerifyFilteredItemAdditions()
         {
@@ -387,22 +419,6 @@ namespace ATZ.ObservableCollectionFilters.Tests
             filter.FilteredItems.Should().BeEmpty();
         }
 
-        private void VerifyItemsSourceItemUpdate(int initialValue, int newValue, int[] correctItemsSource, int[] correctFilteredItems)
-        {
-            var filter = new ObservableCollectionFilter<TestClass>
-            {
-                FilterFunction = _ => _.Value % 2 == 0,
-                ItemsSource = new ObservableCollection<TestClass>()
-            };
-            
-            filter.ItemsSource.Add(new TestClass { Value = initialValue });
-            filter.ItemsSource[0].Value = newValue;
-            filter.SourceItemUpdated(0);
-            
-            VerifyItems(filter.FilteredItems, correctFilteredItems);
-            VerifyItems(filter.ItemsSource, correctItemsSource);
-        }
-
         [Test]
         public void HandleItemsSourceItemUpdateCorrectly()
         {
@@ -410,22 +426,6 @@ namespace ATZ.ObservableCollectionFilters.Tests
             VerifyItemsSourceItemUpdate(1, 2, new[] { 2 }, new[] { 2 });
             VerifyItemsSourceItemUpdate(2, 3, new[] { 3 }, Array.Empty<int>());
             VerifyItemsSourceItemUpdate(2, 4, new[] { 4 }, new[] { 4 });
-        }
-
-        private void VerifyFilteredItemUpdate(int newValue, int[] correctItemsSource, int[] correctFilteredItems)
-        {
-            var filter = new ObservableCollectionFilter<TestClass>
-            {
-                FilterFunction = _ => _.Value % 2 == 0,
-                ItemsSource = new ObservableCollection<TestClass>()
-            };
-
-            filter.ItemsSource.Add(new TestClass { Value = 2 });
-            filter.ItemsSource[0].Value = newValue;
-            filter.FilteredItemUpdated(0);
-            
-            VerifyItems(filter.FilteredItems, correctFilteredItems);
-            VerifyItems(filter.ItemsSource, correctItemsSource);
         }
 
         [Test]
