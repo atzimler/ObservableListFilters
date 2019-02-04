@@ -397,9 +397,10 @@ namespace ATZ.ObservableCollectionFilters.Tests
             
             filter.ItemsSource.Add(new TestClass { Value = initialValue });
             filter.ItemsSource[0].Value = newValue;
-            filter.ItemUpdated(0);
+            filter.SourceItemUpdated(0);
             
             VerifyItems(filter.FilteredItems, correctFilteredItems);
+            VerifyItems(filter.ItemsSource, correctItemsSource);
         }
 
         [Test]
@@ -409,6 +410,29 @@ namespace ATZ.ObservableCollectionFilters.Tests
             VerifyItemsSourceItemUpdate(1, 2, new[] { 2 }, new[] { 2 });
             VerifyItemsSourceItemUpdate(2, 3, new[] { 3 }, Array.Empty<int>());
             VerifyItemsSourceItemUpdate(2, 4, new[] { 4 }, new[] { 4 });
+        }
+
+        private void VerifyFilteredItemUpdate(int newValue, int[] correctItemsSource, int[] correctFilteredItems)
+        {
+            var filter = new ObservableCollectionFilter<TestClass>
+            {
+                FilterFunction = _ => _.Value % 2 == 0,
+                ItemsSource = new ObservableCollection<TestClass>()
+            };
+
+            filter.ItemsSource.Add(new TestClass { Value = 2 });
+            filter.ItemsSource[0].Value = newValue;
+            filter.FilteredItemUpdated(0);
+            
+            VerifyItems(filter.FilteredItems, correctFilteredItems);
+            VerifyItems(filter.ItemsSource, correctItemsSource);
+        }
+
+        [Test]
+        public void HandleFilteredItemsUpdateCorrectly()
+        {
+            VerifyFilteredItemUpdate(1, new[] { 1 }, Array.Empty<int>());
+            VerifyFilteredItemUpdate(2, new[] { 2 }, new[] { 2 });
         }
 
         // TODO: When changing the ItemsSource property it should change the filter.

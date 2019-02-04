@@ -250,16 +250,30 @@ namespace ATZ.ObservableCollectionFilters
             return referenceIndex - referencePosition;
         }
 
-        public void ItemUpdated(int index)
+        public void FilteredItemUpdated(int index)
         {
-            if (ItemPassesFilter(_itemsSource[index]))
+            _internalChange.Execute(() =>
             {
-                AddItemToFilteredItemsFromItemsSourceAt(index);
-            }
-            else
+                if (!ItemPassesFilter(FilteredItems[index]))
+                {
+                    FilteredItems.RemoveAt(index);
+                }
+            });
+        }
+
+        public void SourceItemUpdated(int index)
+        {
+            _internalChange.Execute(() =>
             {
-                RemoveItemFromFilteredItems(_itemsSource[index]);
-            }
+                if (ItemPassesFilter(_itemsSource[index]))
+                {
+                    AddItemToFilteredItemsFromItemsSourceAt(index);
+                }
+                else
+                {
+                    RemoveItemFromFilteredItems(_itemsSource[index]);
+                }
+            });
         }
     }
 }
