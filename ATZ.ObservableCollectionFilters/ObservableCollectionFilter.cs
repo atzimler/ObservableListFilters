@@ -48,7 +48,8 @@ namespace ATZ.ObservableCollectionFilters
             
             _filterCollectionChangeHandlers = new Dictionary<NotifyCollectionChangedAction, Action<NotifyCollectionChangedEventArgs>>
             {
-                { NotifyCollectionChangedAction.Add, HandleAdditionToFilteredItems }
+                { NotifyCollectionChangedAction.Add, HandleAdditionToFilteredItems },
+                { NotifyCollectionChangedAction.Move, HandleMoveInFilteredItems }
             };
 
             FilteredItems.CollectionChanged += FilteredCollectionChanged;
@@ -75,7 +76,7 @@ namespace ATZ.ObservableCollectionFilters
                 return;
             }
 
-            ItemsSource.Insert(TranslateTargetIndex(e.NewStartingIndex), item);
+            ItemsSource.Insert(TranslateTargetIndex(e.NewStartingIndex, -1), item);
         }
 
         private void HandleAdditionToItemsSource(NotifyCollectionChangedEventArgs e)
@@ -89,6 +90,15 @@ namespace ATZ.ObservableCollectionFilters
             FilteredItems.Insert(TranslateSourceIndex(e.NewStartingIndex), item);
         }
 
+        private void HandleMoveInFilteredItems(NotifyCollectionChangedEventArgs e)
+        {
+            var item = e.NewItems[0] as TItem;
+            var oldSourceIndex = ItemsSource.IndexOf(item);
+
+            var referenceDirection = Math.Sign(e.NewStartingIndex - e.OldStartingIndex);
+            ItemsSource.Move(oldSourceIndex, TranslateTargetIndex(e.NewStartingIndex, referenceDirection));
+        }
+        
         private void HandleMoveInItemsSource(NotifyCollectionChangedEventArgs e)
         {
             var item = e.NewItems[0] as TItem;
@@ -172,16 +182,21 @@ namespace ATZ.ObservableCollectionFilters
             return targetReferenceIndex + 1;
         }
 
-        private int TranslateTargetIndex(int targetIndex)
+        private int TranslateTargetIndex(int targetIndex, int referencePosition)
         {
             if (targetIndex == 0)
             {
                 return 0;
             }
 
-            var referenceItem = FilteredItems[targetIndex - 1];
+            if (targetIndex + referencePosition >= FilteredItems.Count)
+            {
+                return _itemsSource.Count - 1;
+            }
+
+            var referenceItem = FilteredItems[targetIndex + referencePosition];
             var referenceIndex = _itemsSource.IndexOf(referenceItem);
-            return referenceIndex + 1;
+            return referenceIndex - referencePosition;
         }
     }
 }

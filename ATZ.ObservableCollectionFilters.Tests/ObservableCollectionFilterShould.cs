@@ -278,5 +278,35 @@ namespace ATZ.ObservableCollectionFilters.Tests
             VerifyFilteredItemAddition(new[] { 2, 4 }, 2, 6, new[] { 2, 4, 6 }, new[] { 2, 4, 6 });          // 2, 4, (6)
             VerifyFilteredItemAddition(new[] { 2, 4, 7 }, 2, 6, new[] { 2, 4, 6, 7 }, new[] { 2, 4, 6 });    // 2, 4, (6), 7!
         }
+
+        private void VerifyFilteredItemMove(
+            int[] initialValues,
+            int oldIndex, int newIndex,
+            int[] correctItemsSource, int[] correctFilteredItems)
+        {
+            var filter = CreateFilterWithItems(initialValues);
+            
+            filter.FilteredItems.Move(oldIndex, newIndex);
+            VerifyItems(filter.ItemsSource, correctItemsSource);
+            VerifyItems(filter.FilteredItems, correctFilteredItems);
+        }
+
+        [Test]
+        public void VerifyFilteredItemMoves()
+        {
+            VerifyFilteredItemMove(new[] { 4, 2, 6 }, 1, 0, new[] { 2, 4, 6 }, new[] { 2, 4, 6 });
+            VerifyFilteredItemMove(new[] {3, 4, 2, 6 }, 1, 0, new[] { 2, 3, 4, 6 }, new[] { 2, 4, 6 });
+            
+            VerifyFilteredItemMove(new[] { 4, 2, 6 }, 0, 1, new[] { 2, 4, 6 }, new[] { 2, 4, 6 });
+            VerifyFilteredItemMove(new[] { 4, 2, 3, 6 }, 0, 1, new[] { 2, 3, 4, 6 }, new[] { 2, 4, 6 });
+            
+            VerifyFilteredItemMove(new[] { 2, 6, 4 }, 1, 2, new[] { 2, 4, 6 }, new[] { 2, 4, 6 });
+            VerifyFilteredItemMove(new[] { 2, 6, 4, 5 }, 1, 2, new[] { 2, 4, 5, 6 }, new[] { 2, 4, 6 });
+            
+            VerifyFilteredItemMove(new[] { 2, 6, 4 }, 2, 1, new[] { 2, 4, 6 }, new[] { 2, 4, 6 });
+            VerifyFilteredItemMove(new[] { 2, 5, 6, 4 }, 2, 1, new[] { 2, 4, 5, 6 }, new[] { 2, 4, 6 });
+        }
+        
+        // TODO: Test moves in both FilteredItems and ItemsSource where old and new position are equal.
     }
 }
