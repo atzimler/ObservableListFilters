@@ -306,7 +306,21 @@ namespace ATZ.ObservableCollectionFilters.Tests
             VerifyFilteredItemMove(new[] { 2, 6, 4 }, 2, 1, new[] { 2, 4, 6 }, new[] { 2, 4, 6 });
             VerifyFilteredItemMove(new[] { 2, 5, 6, 4 }, 2, 1, new[] { 2, 4, 5, 6 }, new[] { 2, 4, 6 });
         }
-        
-        // TODO: Test moves in both FilteredItems and ItemsSource where old and new position are equal.
+
+        [Test]
+        public void VerifyNonMovementMoveInFilteredItems()
+        {
+            VerifyFilteredItemMove(new[] { 1, 2, 3, 4, 5, 6, 7 }, 1, 1, new[] { 1, 2, 3, 4, 5, 6, 7 }, new[] { 2, 4, 6 });
+        }
+
+        [Test]
+        public void VerifyNonMovementMoveInItemsSource()
+        {
+            var filter = CreateFilterWithItems(new[] { 1, 2, 3, 4, 5, 6, 7 });
+            VerifyItems(filter.FilteredItems, new[] { 2, 4, 6 });
+            
+            filter.ItemsSource.Move(3, 3);
+            VerifyItems(filter.FilteredItems, new[] { 2, 4, 6 });
+        }
     }
 }
