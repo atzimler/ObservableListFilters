@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -31,6 +32,18 @@ namespace ATZ.ObservableCollectionFilters.Tests
 
             filter.FilterFunction = ff;
             filter.FilterFunction.Should().Be(ff);
+        }
+
+        [Test]
+        public void RetainReferenceOfItemsSource()
+        {
+            var itemsSource = new ObservableCollection<object>();
+            
+            var filter = new ObservableCollectionFilter<object>();
+            filter.ItemsSource.Should().BeNull();
+
+            filter.ItemsSource = itemsSource;
+            Assert.AreSame(filter.ItemsSource, itemsSource);
         }
     }
 }
