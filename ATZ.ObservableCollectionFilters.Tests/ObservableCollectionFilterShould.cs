@@ -331,5 +331,28 @@ namespace ATZ.ObservableCollectionFilters.Tests
             
             VerifyItems(filter.ItemsSource, new[] { 2, 6 });
         }
+
+        [Test]
+        public void ReplacingItemInFilteredItemsResultsInReplacingItInItemsSourceToo()
+        {
+            var filter = CreateFilterWithItems(new[] { 2, 3, 4, 7, 8 });
+
+            filter.FilteredItems[1] = _items[6];
+            VerifyItems(filter.FilteredItems, new[] { 2, 6, 8 });
+            VerifyItems(filter.ItemsSource, new[] { 2, 3, 6, 7, 8 });
+        }
+
+        [Test]
+        public void ReplaceAndRemoveItemInItemsSourceWhenReplacingItemInFilteredItemsIsNotPassingTheFilter()
+        {
+            var filter = CreateFilterWithItems(new[] { 2, 4, 6 });
+
+            filter.FilteredItems[1] = _items[3];
+            VerifyItems(filter.FilteredItems, new[] { 2, 6 });
+            VerifyItems(filter.ItemsSource, new[] { 2, 3, 6 });
+        }
+        
+        // TODO: When changing the ItemsSource property it should change the filter.
+        // TODO: Check addition to the filter when ItemsSource == null.
     }
 }

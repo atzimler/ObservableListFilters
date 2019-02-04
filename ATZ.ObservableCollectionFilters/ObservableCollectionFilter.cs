@@ -50,7 +50,8 @@ namespace ATZ.ObservableCollectionFilters
             {
                 { NotifyCollectionChangedAction.Add, HandleAdditionToFilteredItems },
                 { NotifyCollectionChangedAction.Move, HandleMoveInFilteredItems },
-                { NotifyCollectionChangedAction.Remove, HandleRemovalFromFilteredItems }
+                { NotifyCollectionChangedAction.Remove, HandleRemovalFromFilteredItems },
+                { NotifyCollectionChangedAction.Replace, HandleReplacementInFilteredItems }
             };
 
             FilteredItems.CollectionChanged += FilteredCollectionChanged;
@@ -125,6 +126,19 @@ namespace ATZ.ObservableCollectionFilters
             FilteredItems.Remove(item);
         }
 
+        private void HandleReplacementInFilteredItems(NotifyCollectionChangedEventArgs e)
+        {
+            var newItem = e.NewItems[0] as TItem;
+            
+            var sourceIndex = _itemsSource.IndexOf(e.OldItems[0] as TItem);
+            _itemsSource[sourceIndex] = newItem;
+
+            if (!ItemPassesFilter(newItem))
+            {
+                FilteredItems.RemoveAt(e.NewStartingIndex);
+            }
+        }
+        
         private void HandleReplacementInItemsSource(NotifyCollectionChangedEventArgs e)
         {
             var oldItem = e.OldItems[0] as TItem;
