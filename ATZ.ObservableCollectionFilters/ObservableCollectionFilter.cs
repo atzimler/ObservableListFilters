@@ -45,7 +45,7 @@ namespace ATZ.ObservableCollectionFilters
         private void HandleAdditionToItemsSource(NotifyCollectionChangedEventArgs e)
         {
             var item = e.NewItems[0] as TItem;
-            if (FilterFunction == null || !FilterFunction(item))
+            if (!ItemPassesFilter(item))
             {
                 return;
             }
@@ -56,7 +56,7 @@ namespace ATZ.ObservableCollectionFilters
         private void HandleMoveInItemsSource(NotifyCollectionChangedEventArgs e)
         {
             var item = e.NewItems[0] as TItem;
-            if (FilterFunction == null || !FilterFunction(item))
+            if (!ItemPassesFilter(item))
             {
                 return;
             }
@@ -67,6 +67,8 @@ namespace ATZ.ObservableCollectionFilters
             FilteredItems.Move(oldTargetIndex, newTargetIndex);
         }
 
+        private bool ItemPassesFilter(TItem item) => FilterFunction != null && FilterFunction(item);
+        
         private void SourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (!_sourceCollectionChangeHandlers.ContainsKey(e.Action))
