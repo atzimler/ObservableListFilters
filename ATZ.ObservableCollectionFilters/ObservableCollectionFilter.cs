@@ -37,7 +37,8 @@ namespace ATZ.ObservableCollectionFilters
         {
             _sourceCollectionChangeHandlers = new Dictionary<NotifyCollectionChangedAction,Action<NotifyCollectionChangedEventArgs>>
             {
-                { NotifyCollectionChangedAction.Add, HandleAdditionToItemsSource }
+                { NotifyCollectionChangedAction.Add, HandleAdditionToItemsSource },
+                { NotifyCollectionChangedAction.Move, HandleMoveInItemsSource }
             };
         }
 
@@ -50,6 +51,20 @@ namespace ATZ.ObservableCollectionFilters
             }
             
             FilteredItems.Insert(TranslateSourceIndex(e.NewStartingIndex), item);
+        }
+
+        private void HandleMoveInItemsSource(NotifyCollectionChangedEventArgs e)
+        {
+            var item = e.NewItems[0] as TItem;
+            if (FilterFunction == null || !FilterFunction(item))
+            {
+                return;
+            }
+            
+            var oldTargetIndex = FilteredItems.IndexOf(item);
+            var newTargetIndex = TranslateSourceIndex(e.NewStartingIndex);
+            
+            FilteredItems.Move(oldTargetIndex, newTargetIndex);
         }
 
         private void SourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
