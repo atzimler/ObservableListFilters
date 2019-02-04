@@ -44,7 +44,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
             filter.FilteredItems.Select(_ => _.Value).Should().BeEquivalentTo(correctValues).And.HaveCount(correctValues.Length);
         }
 
-        private void VerifyItemAddition(
+        private void VerifySourceItemAddition(
             int[] initialSourceValues, int[] initialFilteredValues, 
             int insertPosition, int insertValue)
         {
@@ -152,19 +152,19 @@ namespace ATZ.ObservableCollectionFilters.Tests
         }
 
         [Test]
-        public void VerifyItemAdditions()
+        public void VerifySourceItemAdditions()
         {
-            VerifyItemAddition(new[] { 4, 6 }, new[] { 4, 6 }, 0, 2);        // (2), 4, 6
-            VerifyItemAddition(new[] { 1, 4, 6 }, new[] { 4, 6 }, 1, 2);     // 1, (2), 4, 6
-            VerifyItemAddition(new[] { 3, 4, 6 }, new[] { 4, 6 }, 0, 2);     // (2), 3, 4, 6
+            VerifySourceItemAddition(new[] { 4, 6 }, new[] { 4, 6 }, 0, 2);        // (2), 4, 6
+            VerifySourceItemAddition(new[] { 1, 4, 6 }, new[] { 4, 6 }, 1, 2);     // 1, (2), 4, 6
+            VerifySourceItemAddition(new[] { 3, 4, 6 }, new[] { 4, 6 }, 0, 2);     // (2), 3, 4, 6
             
-            VerifyItemAddition(new[] { 2, 6 }, new[] { 2, 6 }, 1, 4);        // 2, (4), 6 
-            VerifyItemAddition(new[] { 2, 3, 6 }, new[] { 2, 6 }, 2, 4);     // 2, 3, (4), 6
-            VerifyItemAddition(new[] { 2, 5, 6 }, new[] { 2, 6 }, 1, 4);     // 2, (4), 5, 6
+            VerifySourceItemAddition(new[] { 2, 6 }, new[] { 2, 6 }, 1, 4);        // 2, (4), 6 
+            VerifySourceItemAddition(new[] { 2, 3, 6 }, new[] { 2, 6 }, 2, 4);     // 2, 3, (4), 6
+            VerifySourceItemAddition(new[] { 2, 5, 6 }, new[] { 2, 6 }, 1, 4);     // 2, (4), 5, 6
             
-            VerifyItemAddition(new[] { 2, 4 }, new[] { 2, 4 }, 2, 6);        // 2, 4, (6)
-            VerifyItemAddition(new[] { 2, 4, 5 }, new[] { 2, 4 }, 3, 6);     // 2, 4, 5,(6)
-            VerifyItemAddition(new[] { 2, 4, 7 }, new[] { 2, 4 }, 2, 6);     // 2, 4, (6), 7
+            VerifySourceItemAddition(new[] { 2, 4 }, new[] { 2, 4 }, 2, 6);        // 2, 4, (6)
+            VerifySourceItemAddition(new[] { 2, 4, 5 }, new[] { 2, 4 }, 3, 6);     // 2, 4, 5,(6)
+            VerifySourceItemAddition(new[] { 2, 4, 7 }, new[] { 2, 4 }, 2, 6);     // 2, 4, (6), 7
         }
     }
 }
