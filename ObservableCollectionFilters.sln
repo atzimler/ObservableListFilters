@@ -1,8 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ATZ.ObservableCollectionFilters", "ATZ.ObservableCollectionFilters\ATZ.ObservableCollectionFilters.csproj", "{AC7F8FA1-83BE-4F7A-90F8-7CC19B122B52}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ATZ.ObservableCollectionFilters.Tests", "ATZ.ObservableCollectionFilters.Tests\ATZ.ObservableCollectionFilters.Tests.csproj", "{740E054A-80DA-4B76-BD2C-552775E5A598}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5F54CB7B-2E4B-4D06-9DB5-B3A52B693616}"
+	ProjectSection(SolutionItems) = preProject
+		AssemblyVersion.cs = AssemblyVersion.cs
+		ATZ.ObservableCollectionFilters.xml = ATZ.ObservableCollectionFilters.xml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
