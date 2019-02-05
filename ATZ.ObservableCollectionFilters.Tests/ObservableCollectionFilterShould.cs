@@ -463,5 +463,25 @@ namespace ATZ.ObservableCollectionFilters.Tests
             filter.FilteredItems.Add(_items[2]);
             VerifyItems(filter.FilteredItems, Array.Empty<int>());
         }
+
+        [Test]
+        public void RebuildFilteredItemsOnFilterFunctionChange()
+        {
+            var filter = new ObservableCollectionFilter<TestClass>
+            {
+                FilterFunction = _ => _.Value % 2 == 0,
+                ItemsSource = new ObservableCollection<TestClass>()
+            };
+
+            for (var i = 0; i < 10; ++i)
+            {
+                filter.ItemsSource.Add(new TestClass { Value = i});
+            }
+            
+            VerifyItems(filter.FilteredItems, new[] { 0, 2, 4, 6, 8 });
+
+            filter.FilterFunction = _ => _.Value % 2 == 1;
+            VerifyItems(filter.FilteredItems, new[] { 1, 3, 5, 7, 9 });
+        }
     }
 }

@@ -9,11 +9,26 @@ namespace ATZ.ObservableCollectionFilters
         where TItem : class
     {
         private readonly Dictionary<NotifyCollectionChangedAction, Action<NotifyCollectionChangedEventArgs>> _filterCollectionChangeHandlers;
+        private Func<TItem, bool> _filterFunction = _ => true;
         private readonly InternalChange _internalChange = new InternalChange();
         private ObservableCollection<TItem> _itemsSource;
         private readonly Dictionary<NotifyCollectionChangedAction, Action<NotifyCollectionChangedEventArgs>> _sourceCollectionChangeHandlers;
+
+        public Func<TItem, bool> FilterFunction
+        {
+            get => _filterFunction;
+            set
+            {
+                if (_filterFunction == value)
+                {
+                    return;
+                }
+                
+                _filterFunction = value;
+                FilteredItems.Clear();
+            }
+        }
         
-        public Func<TItem, bool> FilterFunction { get; set; } = _ => true;
         public ObservableCollection<TItem> FilteredItems { get; } = new ObservableCollection<TItem>();
 
         public ObservableCollection<TItem> ItemsSource
@@ -78,7 +93,7 @@ namespace ATZ.ObservableCollectionFilters
         {
             foreach (var item in _itemsSource)
             {
-                if (FilterFunction(item))
+                if (_filterFunction(item))
                 {
                     FilteredItems.Add(item);
                 }
@@ -192,7 +207,7 @@ namespace ATZ.ObservableCollectionFilters
 
         private void HandleResetOnFilteredItems()
         {
-            if (_itemsSource == null || FilterFunction == null)
+            if (_itemsSource == null || _filterFunction == null)
             {
                 return;
             }
@@ -205,7 +220,7 @@ namespace ATZ.ObservableCollectionFilters
             FilteredItems.Clear();
         }
         
-        private bool ItemPassesFilter(TItem item) => FilterFunction != null && FilterFunction(item);
+        private bool ItemPassesFilter(TItem item) => _filterFunction != null && _filterFunction(item);
 
         private void RemoveItemFromFilteredItems(TItem item)
         {
@@ -225,7 +240,7 @@ namespace ATZ.ObservableCollectionFilters
         private int TranslateSourceIndex(int sourceIndex)
         {
             var referenceIndex = sourceIndex - 1;
-            while (referenceIndex > -1 && !FilterFunction(_itemsSource[referenceIndex]))
+            while (referenceIndex > -1 && !_filterFunction(_itemsSource[referenceIndex]))
             {
                 referenceIndex--;
             }
