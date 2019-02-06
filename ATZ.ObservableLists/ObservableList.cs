@@ -42,29 +42,44 @@ namespace ATZ.ObservableLists
                 return false;
             }
 
-            if (e.Action == NotifyCollectionChangedAction.Reset)
-            {
-                _items.Clear();
-                return true;
-            }
-            
-            if (e.Action == NotifyCollectionChangedAction.Replace)
-            {
-                _items[e.OldStartingIndex] = (T)e.NewItems[0];
-            }
+            ApplyReset(e);
+            ApplyReplace(e);
+            ApplyRemoveAt(e);
+            ApplyInsertAt(e);
 
+            return true;
+        }
 
-            if (e.Action == NotifyCollectionChangedAction.Move || e.Action == NotifyCollectionChangedAction.Remove)
-            {
-                _items.RemoveAt(e.OldStartingIndex);
-            }
-
+        private void ApplyInsertAt(NotifyCollectionChangedEventArgs e)
+        {
             if (e.Action == NotifyCollectionChangedAction.Add || e.Action == NotifyCollectionChangedAction.Move)
             {
                 _items.Insert(e.NewStartingIndex, (T)e.NewItems[0]);
             }
+        }
 
-            return true;
+        private void ApplyRemoveAt(NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Move || e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                _items.RemoveAt(e.OldStartingIndex);
+            }
+        }
+
+        private void ApplyReplace(NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Replace)
+            {
+                _items[e.OldStartingIndex] = (T)e.NewItems[0];
+            }
+        }
+
+        private void ApplyReset(NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                _items.Clear();
+            }
         }
 
         private T AssertArgumentIsOfTypeT(object item)
