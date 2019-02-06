@@ -47,29 +47,27 @@ namespace ATZ.ObservableLists
             {
                 return false;
             }
-            
-            switch (e.Action)
+
+            if (e.Action == NotifyCollectionChangedAction.Reset)
             {
-                case NotifyCollectionChangedAction.Add:
-                    _items.Insert(e.NewStartingIndex, (T)e.NewItems[0]);
-                    break;
-                
-                case NotifyCollectionChangedAction.Move:
-                    _items.RemoveAt(e.OldStartingIndex);
-                    _items.Insert(e.NewStartingIndex, (T)e.OldItems[0]);
-                    break;
-                
-                case NotifyCollectionChangedAction.Remove:
-                    _items.RemoveAt(e.OldStartingIndex);
-                    break;
-                
-                case NotifyCollectionChangedAction.Replace:
-                    _items[e.OldStartingIndex] = (T)e.NewItems[0];
-                    break;
-                
-                case NotifyCollectionChangedAction.Reset:
-                    _items.Clear();
-                    break;
+                _items.Clear();
+                return true;
+            }
+            
+            if (e.Action == NotifyCollectionChangedAction.Replace)
+            {
+                _items[e.OldStartingIndex] = (T)e.NewItems[0];
+            }
+
+
+            if (e.Action == NotifyCollectionChangedAction.Move || e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                _items.RemoveAt(e.OldStartingIndex);
+            }
+
+            if (e.Action == NotifyCollectionChangedAction.Add || e.Action == NotifyCollectionChangedAction.Move)
+            {
+                _items.Insert(e.NewStartingIndex, (T)e.NewItems[0]);
             }
 
             return true;
