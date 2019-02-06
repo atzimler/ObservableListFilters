@@ -138,10 +138,6 @@ namespace ATZ.ObservableLists
                     ProcessChange();
                 }
             }
-            catch (Exception ex)
-            {
-                
-            }
             finally
             {
                 _processing = false;
