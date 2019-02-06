@@ -52,27 +52,27 @@ namespace ATZ.ObservableLists
             {
                 case NotifyCollectionChangedAction.Add:
                     _items.Insert(e.NewStartingIndex, (T)e.NewItems[0]);
-                    return true;
+                    break;
                 
                 case NotifyCollectionChangedAction.Move:
                     _items.RemoveAt(e.OldStartingIndex);
                     _items.Insert(e.NewStartingIndex, (T)e.OldItems[0]);
-                    return true;
+                    break;
                 
                 case NotifyCollectionChangedAction.Remove:
                     _items.RemoveAt(e.OldStartingIndex);
-                    return true;
+                    break;
                 
                 case NotifyCollectionChangedAction.Replace:
                     _items[e.OldStartingIndex] = (T)e.NewItems[0];
-                    return true;
+                    break;
                 
                 case NotifyCollectionChangedAction.Reset:
                     _items.Clear();
-                    return true;
+                    break;
             }
 
-            return false;
+            return true;
         }
 
         private T AssertArgumentIsOfTypeT(object item)
