@@ -187,6 +187,23 @@ namespace ATZ.ObservableLists.Tests
         }
 
         [Test]
+        public void NotifyWhenRemovingItemFromTheListByReference()
+        {
+            var ol = new ObservableList<int> { 12, 13, 42 };
+
+            var monitor = ol.Monitor();
+            ol.CollectionChanged += (o, e) =>
+            {
+                e.Action.Should().Be(NotifyCollectionChangedAction.Remove);
+                e.OldStartingIndex.Should().Be(1);
+                e.OldItems[0].Should().Be(13);
+            };
+
+            ol.Remove(13);
+            monitor.Should().Raise(nameof(ol.CollectionChanged));
+        }
+
+        [Test]
         public void NotifyWhenReplacingItemInTheList()
         {
             var ol = new ObservableList<int> { 8, 13, 42 };

@@ -162,8 +162,13 @@ namespace ATZ.ObservableLists
         
         public bool Remove(T item)
         {
-            // TODO: This should also send notification.
-            return _items.Remove(item);
+            var index = _items.IndexOf(item);
+            if (index != -1)
+            {
+                RemoveAt(index);
+            }
+
+            return index != -1;
         }
 
         public void RemoveAt(int index) => ProcessChanges(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _items[index] }, index)); 
