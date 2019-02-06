@@ -10,6 +10,7 @@ namespace ATZ.ObservableLists.Tests
         [Test]
         public void NotContainItemNotAdded()
         {
+            // ReSharper disable once CollectionNeverUpdated.Local => Checking default state.
             var ol = new ObservableList<int>();
             ol.Contains(13).Should().BeFalse();
         }
@@ -17,14 +18,14 @@ namespace ATZ.ObservableLists.Tests
         [Test]
         public void ContainAddedItem()
         {
-            var ol = new ObservableList<int>();
-            ol.Add(42);
+            var ol = new ObservableList<int> { 42 };
             ol.Contains(42).Should().BeTrue();
         }
 
         [Test]
         public void HaveZeroAsDefaultCount()
         {
+            // ReSharper disable once CollectionNeverUpdated.Local => Checking default state.
             var ol = new ObservableList<int>();
             ol.Count.Should().Be(0);
         }
@@ -32,16 +33,14 @@ namespace ATZ.ObservableLists.Tests
         [Test]
         public void AddingItemIncreasesCount()
         {
-            var ol = new ObservableList<int>();
-            ol.Add(42);
+            var ol = new ObservableList<int> { 42 };
             ol.Count.Should().Be(1);
         }
 
         [Test]
         public void ClearItemsCorrectly()
         {
-            var ol = new ObservableList<int>();
-            ol.Add(42);
+            var ol = new ObservableList<int> { 42 };
 
             ol.Clear();
             ol.Count.Should().Be(0);
@@ -50,9 +49,7 @@ namespace ATZ.ObservableLists.Tests
         [Test]
         public void RemoveItemCorrectly()
         {
-            var ol = new ObservableList<int>();
-            ol.Add(42);
-            ol.Add(13);
+            var ol = new ObservableList<int> { 42, 13 };
 
             ol.Remove(13);
             ol.Count.Should().Be(1);
