@@ -10,8 +10,10 @@ namespace ATZ.ObservableLists
         : IReadOnlyList<T>, IList, IList<T>, INotifyCollectionChanged
         //        : IList<T>, IList, IReadOnlyList<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
+        private readonly Queue<NotifyCollectionChangedEventArgs> _changes = new Queue<NotifyCollectionChangedEventArgs>();
         private readonly EqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;
         private readonly List<T> _items = new List<T>();
+        private bool _processing;
 
         object IList.this[int index]
         {
@@ -33,9 +35,6 @@ namespace ATZ.ObservableLists
 
         public event NotifyCollectionChangedEventHandler CollectionChanged = delegate {  };
 
-        private bool OldItemIsValid(NotifyCollectionChangedEventArgs e)
-            => e.Action == NotifyCollectionChangedAction.Add || e.Action == NotifyCollectionChangedAction.Reset || OldItemHasNotChanged(e); 
-        
         private bool ApplyChange(NotifyCollectionChangedEventArgs e)
         {
             if (!OldItemIsValid(e))
@@ -78,9 +77,6 @@ namespace ATZ.ObservableLists
             return false;
         }
 
-        private bool OldItemHasNotChanged(NotifyCollectionChangedEventArgs e)
-            => e.OldStartingIndex < _items.Count && _equalityComparer.Equals(_items[e.OldStartingIndex], (T)e.OldItems[0]);
-        
         private T AssertArgumentIsOfTypeT(object item)
         {
             try
@@ -96,9 +92,13 @@ namespace ATZ.ObservableLists
             }
         }
 
-        private readonly Queue<NotifyCollectionChangedEventArgs> _changes = new Queue<NotifyCollectionChangedEventArgs>();
-        private bool _processing;
+        private bool OldItemHasNotChanged(NotifyCollectionChangedEventArgs e)
+            => e.OldStartingIndex < _items.Count && _equalityComparer.Equals(_items[e.OldStartingIndex], (T)e.OldItems[0]);
 
+        private bool OldItemIsValid(NotifyCollectionChangedEventArgs e)
+            => e.Action == NotifyCollectionChangedAction.Add || e.Action == NotifyCollectionChangedAction.Reset || OldItemHasNotChanged(e); 
+
+        
         private void ProcessChange()
         {
             var change = _changes.Dequeue();
