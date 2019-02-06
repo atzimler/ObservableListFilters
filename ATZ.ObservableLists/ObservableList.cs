@@ -8,7 +8,7 @@ using System.Globalization;
 namespace ATZ.ObservableLists
 {
     public class ObservableList<T> 
-        : IReadOnlyList<T>, IList, IList<T>
+        : IReadOnlyList<T>, IList, IList<T>, INotifyCollectionChanged
         //        : IList<T>, IList, IReadOnlyList<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
         private readonly List<T> _items = new List<T>();
@@ -31,6 +31,19 @@ namespace ATZ.ObservableLists
         public bool IsSynchronized => ((ICollection)_items).IsSynchronized;
         public object SyncRoot => ((ICollection)_items).SyncRoot;
 
+        public event NotifyCollectionChangedEventHandler CollectionChanged = delegate {  };
+
+        private void ApplyChange(NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    _items.Insert(e.NewStartingIndex, (T)e.NewItems[0]);
+                    break;
+            }
+            OnCollectionChanged(e);
+        }
+        
         private T AssertArgumentIsOfTypeT(object item)
         {
             try
@@ -46,6 +59,35 @@ namespace ATZ.ObservableLists
             }
         }
 
+        private readonly Queue<NotifyCollectionChangedEventArgs> _changes = new Queue<NotifyCollectionChangedEventArgs>();
+        private bool _processing;
+        private void ProcessChange(NotifyCollectionChangedEventArgs e)
+        {
+            _changes.Enqueue(e);
+            if (_processing)
+            {
+                return;
+            }
+
+            try
+            {
+                while (_changes.Count > 0)
+                {
+                    var change = _changes.Dequeue();
+                    ApplyChange(change);
+                }
+            }
+            finally
+            {
+                _processing = false;
+            }
+        }
+        
+        protected virtual void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
+        {
+            CollectionChanged(this, e);
+        }
+
         private void SetAt(int index, T value)
         {
             _items[index] = value;
@@ -57,11 +99,8 @@ namespace ATZ.ObservableLists
 
             return Count - 1;
         }
-        
-        public void Add(T item)
-        {
-            _items.Add(item);
-        }
+
+        public void Add(T item) => Insert(_items.Count, item);
 
         public void Clear()
         {
@@ -71,15 +110,8 @@ namespace ATZ.ObservableLists
         bool IList.Contains(object item) => ((IList)_items).Contains(item);
         public bool Contains(T item) => _items.Contains(item);
 
-        public void CopyTo(Array array, int index)
-        {
-            ((ICollection)_items).CopyTo(array, index);
-        }
-        
-        public void CopyTo(T[] array, int index)
-        {
-            _items.CopyTo(array, index);
-        }
+        public void CopyTo(Array array, int index) => ((ICollection)_items).CopyTo(array, index);
+        public void CopyTo(T[] array, int index) => _items.CopyTo(array, index);
 
         IEnumerator IEnumerable.GetEnumerator() => _items.GetEnumerator();
         public IEnumerator<T> GetEnumerator() => _items.GetEnumerator();
@@ -88,11 +120,7 @@ namespace ATZ.ObservableLists
         public int IndexOf(T item) => _items.IndexOf(item);
 
         void IList.Insert(int index, object item) => Insert(index, AssertArgumentIsOfTypeT(item));
-
-        public void Insert(int index, T item)
-        {
-            _items.Insert(index, item);
-        }
+        public void Insert(int index, T item) => ProcessChange(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] { item }, index));
 
         void IList.Remove(object item)
         {
@@ -112,7 +140,6 @@ namespace ATZ.ObservableLists
             _items.RemoveAt(index);
         }
         
-//        public event NotifyCollectionChangedEventHandler CollectionChanged;
 //        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

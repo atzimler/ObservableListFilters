@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -146,6 +147,25 @@ namespace ATZ.ObservableLists.Tests
             ol.RemoveAt(1);
 
             ol.Should().ContainInOrder(new[] { 8, 42 }).And.HaveCount(2);
+        }
+        #endregion
+        
+        #region INotifyCollectionChanged
+        [Test]
+        public void NotifyWhenAddingItemToTheList()
+        {
+            var ol = new ObservableList<int> { 12, 43 };
+
+            var monitor = ol.Monitor();
+            ol.CollectionChanged += (o, e) =>
+            {
+                e.Action.Should().Be(NotifyCollectionChangedAction.Add);
+                e.NewStartingIndex.Should().Be(1);
+                e.NewItems[0].Should().Be(42);
+            };
+            
+            ol.Insert(1, 42);
+            monitor.Should().Raise(nameof(ol.CollectionChanged));
         }
         #endregion
     }
