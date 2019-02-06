@@ -7,7 +7,7 @@ using System.ComponentModel;
 namespace ATZ.ObservableLists
 {
     public class ObservableList<T> 
-        : ICollection<T>
+        : ICollection<T>, ICollection
         //        : IList<T>, IList, IReadOnlyList<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
         private readonly List<T> _items = new List<T>();
@@ -21,7 +21,9 @@ namespace ATZ.ObservableLists
 //
 
         public bool IsReadOnly => ((ICollection<T>)_items).IsReadOnly;
-
+        public bool IsSynchronized => ((ICollection)_items).IsSynchronized;
+        public object SyncRoot => ((ICollection)_items).SyncRoot;
+        
         public void Add(T item)
         {
             _items.Add(item);
@@ -33,6 +35,11 @@ namespace ATZ.ObservableLists
         }
         
         public bool Contains(T item) => _items.Contains(item);
+
+        public void CopyTo(Array array, int index)
+        {
+            ((ICollection)_items).CopyTo(array, index);
+        }
         
         public void CopyTo(T[] array, int index)
         {
@@ -44,7 +51,7 @@ namespace ATZ.ObservableLists
         public IEnumerator<T> GetEnumerator() => _items.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => _items.GetEnumerator();
-        
+
         public bool Remove(T item)
         {
             return _items.Remove(item);
@@ -54,26 +61,6 @@ namespace ATZ.ObservableLists
 //        private bool _isReadOnly;
 //        private int _count1;
 //        private bool _isReadOnly1;
-//
-//        public IEnumerator<T> GetEnumerator()
-//        {
-//            throw new NotImplementedException();
-//        }
-//
-//        IEnumerator IEnumerable.GetEnumerator()
-//        {
-//            return GetEnumerator();
-//        }
-//
-//        void IList.Clear()
-//        {
-//            throw new NotImplementedException();
-//        }
-//
-//        public bool Contains(object value)
-//        {
-//            throw new NotImplementedException();
-//        }
 //
 //        public int IndexOf(object value)
 //        {
