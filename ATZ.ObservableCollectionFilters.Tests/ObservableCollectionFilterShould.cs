@@ -483,5 +483,22 @@ namespace ATZ.ObservableCollectionFilters.Tests
             filter.FilterFunction = _ => _.Value % 2 == 1;
             VerifyItems(filter.FilteredItems, new[] { 1, 3, 5, 7, 9 });
         }
+
+        [Test]
+        public void BeAbleToFunctionWithMultipleObservers()
+        {
+            var filter = new ObservableCollectionFilter<TestClass>
+            {
+                FilterFunction = _ => _.Value % 2 == 0,
+                ItemsSource = new ObservableCollection<TestClass> { new TestClass { Value =  2 }}
+            };
+
+            filter.FilteredItems.CollectionChanged += delegate
+            {
+                // Observer
+            };
+            
+            filter.FilteredItems.Clear();
+        }
     }
 }
