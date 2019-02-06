@@ -37,10 +37,13 @@ namespace ATZ.ObservableLists
 
         private bool NewPositionIsValidForInsert(NotifyCollectionChangedEventArgs e)
             => e.Action != NotifyCollectionChangedAction.Add || e.NewStartingIndex <= _items.Count;
+
+        private bool NewPositionIsValidForMove(NotifyCollectionChangedEventArgs e)
+            => e.Action != NotifyCollectionChangedAction.Move || e.NewStartingIndex < _items.Count;
         
         private bool ApplyChange(NotifyCollectionChangedEventArgs e)
         {
-            if (!OldItemIsValid(e) || !NewPositionIsValidForInsert(e))
+            if (!OldItemIsValid(e) || !NewPositionIsValidForInsert(e) || !NewPositionIsValidForMove(e))
             {
                 return false;
             }
@@ -52,13 +55,9 @@ namespace ATZ.ObservableLists
                     return true;
                 
                 case NotifyCollectionChangedAction.Move:
-                    if (e.NewStartingIndex < _items.Count)
-                    {
-                        _items.RemoveAt(e.OldStartingIndex);
-                        _items.Insert(e.NewStartingIndex, (T)e.OldItems[0]);
-                        return true;
-                    }
-                    break;
+                    _items.RemoveAt(e.OldStartingIndex);
+                    _items.Insert(e.NewStartingIndex, (T)e.OldItems[0]);
+                    return true;
                 
                 case NotifyCollectionChangedAction.Remove:
                     _items.RemoveAt(e.OldStartingIndex);
