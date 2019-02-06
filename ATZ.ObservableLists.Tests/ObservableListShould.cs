@@ -376,6 +376,28 @@ namespace ATZ.ObservableLists.Tests
             ol.RemoveAt(4);
             ol.Should().ContainInOrder(1, 2, 3).And.HaveCount(3);
         }
+
+        [Test]
+        public void NotMoveItemIfTargetLocationBecameInvalidWhileNotifyCollectionChangedWasProcessed()
+        {
+            var ol = new ObservableList<int> { 1, 2, 3, 4 };
+            var changeHandlerExecuted = false;
+
+            ol.CollectionChanged += (o, e) =>
+            {
+                if (changeHandlerExecuted)
+                {
+                    return;
+                }
+
+                ol.RemoveAt(2);
+                ol.Move(0, 2);
+                changeHandlerExecuted = true;
+            };
+            
+            ol.RemoveAt(3);
+            ol.Should().ContainInOrder(1, 2).And.HaveCount(2);
+        }
         #endregion
     }
 }
