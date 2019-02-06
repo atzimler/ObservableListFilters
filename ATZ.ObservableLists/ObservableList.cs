@@ -8,7 +8,7 @@ using System.Globalization;
 namespace ATZ.ObservableLists
 {
     public class ObservableList<T> 
-        : ICollection<T>, IReadOnlyList<T>, IList
+        : IReadOnlyList<T>, IList, IList<T>
         //        : IList<T>, IList, IReadOnlyList<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
         private readonly List<T> _items = new List<T>();
@@ -22,7 +22,7 @@ namespace ATZ.ObservableLists
         public T this[int index]
         {
             get => _items[index];
-//            set => _items[index] = value;
+            set => SetAt(index, value);
         }
 
         public int Count => _items.Count;
@@ -85,6 +85,7 @@ namespace ATZ.ObservableLists
         public IEnumerator<T> GetEnumerator() => _items.GetEnumerator();
 
         int IList.IndexOf(object item) => ((IList)_items).IndexOf(item);
+        public int IndexOf(T item) => _items.IndexOf(item);
 
         void IList.Insert(int index, object item) => Insert(index, AssertArgumentIsOfTypeT(item));
 
@@ -111,22 +112,6 @@ namespace ATZ.ObservableLists
             _items.RemoveAt(index);
         }
         
-//        private int _count;
-//        private bool _isReadOnly;
-//        private int _count1;
-//        private bool _isReadOnly1;
-//
-
-//        public int IndexOf(T item)
-//        {
-//            throw new NotImplementedException();
-//        }
-//
-//        public void Insert(int index, T item)
-//        {
-//            throw new NotImplementedException();
-//        }
-//
 //        public event NotifyCollectionChangedEventHandler CollectionChanged;
 //        public event PropertyChangedEventHandler PropertyChanged;
     }
