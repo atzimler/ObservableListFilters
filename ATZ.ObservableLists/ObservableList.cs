@@ -37,7 +37,7 @@ namespace ATZ.ObservableLists
 
         private bool ApplyChange(NotifyCollectionChangedEventArgs e)
         {
-            if (!OldItemIsValid(e) || !NewPositionIsValidForInsert(e) || !NewPositionIsValidForMove(e))
+            if (IsObsoleteRequest(e))
             {
                 return false;
             }
@@ -81,6 +81,9 @@ namespace ATZ.ObservableLists
                     "value");
             }
         }
+
+        private bool IsObsoleteRequest(NotifyCollectionChangedEventArgs e)
+            => !OldItemIsValid(e) || !NewPositionIsValidForInsert(e) || !NewPositionIsValidForMove(e);
         
         private bool NewPositionIsValidForInsert(NotifyCollectionChangedEventArgs e)
             => e.Action != NotifyCollectionChangedAction.Add || e.NewStartingIndex <= _items.Count;
