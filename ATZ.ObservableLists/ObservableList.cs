@@ -7,18 +7,17 @@ using System.ComponentModel;
 namespace ATZ.ObservableLists
 {
     public class ObservableList<T> 
-        : ICollection<T>, ICollection
+        : ICollection<T>, ICollection, IReadOnlyList<T>
         //        : IList<T>, IList, IReadOnlyList<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
         private readonly List<T> _items = new List<T>();
 
 
-//        public T this[int index]
-//        {
-//            get => _items[index];
+        public T this[int index]
+        {
+            get => _items[index];
 //            set => _items[index] = value;
-//        }
-//
+        }
 
         public bool IsReadOnly => ((ICollection<T>)_items).IsReadOnly;
         public bool IsSynchronized => ((ICollection)_items).IsSynchronized;

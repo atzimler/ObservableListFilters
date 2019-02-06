@@ -80,5 +80,15 @@ namespace ATZ.ObservableLists.Tests
             items.Should().Contain(new[] { 13, 42 }).And.HaveCount(2);
         }
         #endregion
+
+        #region IReadOnlyList<T>
+        [Test]
+        public void BeAbleToReturnItemByIndex()
+        {
+            var ol = new ObservableList<int> { 42 };
+
+            ol[0].Should().Be(42);
+        }
+        #endregion
     }
 }
