@@ -281,6 +281,29 @@ namespace ATZ.ObservableLists.Tests
             
             monitor.Should().NotRaise(nameof(ol.CollectionChanged));
         }
+
+        [Test]
+        public void NotReplaceItemIfItHasBeenChangedWhileNotifyCollectionChangedWasProcessed()
+        {
+            var ol = new ObservableList<int> { 1, 2, 3 };
+            var changeHandlerExecuted = false;
+
+            ol.CollectionChanged += (o, e) =>
+            {
+                if (changeHandlerExecuted)
+                {
+                    return;
+                }
+                
+                ol.Move(3, 0);
+                ol[0] = 4;
+                changeHandlerExecuted = true;
+            };
+            
+            ol.Add(0);
+
+            ol.Should().ContainInOrder(0, 1, 2, 3).And.HaveCount(4);
+        }
         #endregion
     }
 }

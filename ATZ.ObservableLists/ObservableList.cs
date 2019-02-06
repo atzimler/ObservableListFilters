@@ -33,9 +33,16 @@ namespace ATZ.ObservableLists
 
         public event NotifyCollectionChangedEventHandler CollectionChanged = delegate {  };
 
+        private bool OldItemIsValid(NotifyCollectionChangedEventArgs e)
+            => e.Action == NotifyCollectionChangedAction.Add || e.Action == NotifyCollectionChangedAction.Reset || OldItemHasNotChanged(e); 
+        
         private bool ApplyChange(NotifyCollectionChangedEventArgs e)
         {
-            var c = EqualityComparer<T>.Default;
+            if (!OldItemIsValid(e))
+            {
+                return false;
+            }
+            
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
@@ -47,7 +54,7 @@ namespace ATZ.ObservableLists
                     break;
                 
                 case NotifyCollectionChangedAction.Move:
-                    if (AssertOldItemHasNotChanged(e) && e.NewStartingIndex <= _items.Count)
+                    if (OldItemHasNotChanged(e) && e.NewStartingIndex <= _items.Count)
                     {
                         _items.RemoveAt(e.OldStartingIndex);
                         _items.Insert(e.NewStartingIndex, (T)e.OldItems[0]);
@@ -56,7 +63,7 @@ namespace ATZ.ObservableLists
                     break;
                 
                 case NotifyCollectionChangedAction.Remove:
-                    if (AssertOldItemHasNotChanged(e))
+                    if (OldItemHasNotChanged(e))
                     {
                         _items.RemoveAt(e.OldStartingIndex);
                         return true;
@@ -64,12 +71,8 @@ namespace ATZ.ObservableLists
                     break;
                 
                 case NotifyCollectionChangedAction.Replace:
-                    if (AssertOldItemHasNotChanged(e))
-                    {
-                        _items[e.OldStartingIndex] = (T)e.NewItems[0];
-                        return true;
-                    }
-                    break;
+                    _items[e.OldStartingIndex] = (T)e.NewItems[0];
+                    return true;
                 
                 case NotifyCollectionChangedAction.Reset:
                     _items.Clear();
@@ -79,7 +82,7 @@ namespace ATZ.ObservableLists
             return false;
         }
 
-        private bool AssertOldItemHasNotChanged(NotifyCollectionChangedEventArgs e)
+        private bool OldItemHasNotChanged(NotifyCollectionChangedEventArgs e)
             => e.OldStartingIndex < _items.Count && _equalityComparer.Equals(_items[e.OldStartingIndex], (T)e.OldItems[0]);
         
         private T AssertArgumentIsOfTypeT(object item)
@@ -119,6 +122,7 @@ namespace ATZ.ObservableLists
 
             try
             {
+                _processing = true;
                 while (_changes.Count > 0)
                 {
                     ProcessChange();
