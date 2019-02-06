@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Globalization;
 
 namespace ATZ.ObservableLists
@@ -42,6 +41,16 @@ namespace ATZ.ObservableLists
                     if (e.NewStartingIndex <= _items.Count)
                     {
                         _items.Insert(e.NewStartingIndex, (T)e.NewItems[0]);
+                        return true;
+                    }
+                    break;
+                
+                case NotifyCollectionChangedAction.Move:
+                    if (e.OldStartingIndex < _items.Count && c.Equals(_items[e.OldStartingIndex], (T)e.OldItems[0])
+                                                          && e.NewStartingIndex <= _items.Count)
+                    {
+                        _items.RemoveAt(e.OldStartingIndex);
+                        _items.Insert(e.NewStartingIndex, (T)e.OldItems[0]);
                         return true;
                     }
                     break;
@@ -94,7 +103,7 @@ namespace ATZ.ObservableLists
             if (ApplyChange(change))
             {
                 OnCollectionChanged(change);
-            };
+            }
         }
         
         private void ProcessChanges(NotifyCollectionChangedEventArgs e)
@@ -150,8 +159,18 @@ namespace ATZ.ObservableLists
         public int IndexOf(T item) => _items.IndexOf(item);
 
         void IList.Insert(int index, object item) => Insert(index, AssertArgumentIsOfTypeT(item));
-        public void Insert(int index, T item) => ProcessChanges(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] { item }, index));
+        public void Insert(int index, T item) => ProcessChanges(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item , index));
 
+        public void Move(int oldIndex, int newIndex)
+        {
+            if (oldIndex == newIndex)
+            {
+                return;
+            }
+            
+            ProcessChanges(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, _items[oldIndex], newIndex, oldIndex));   
+        }
+        
         void IList.Remove(object item)
         {
             if (item is T x)
@@ -171,7 +190,7 @@ namespace ATZ.ObservableLists
             return index != -1;
         }
 
-        public void RemoveAt(int index) => ProcessChanges(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _items[index] }, index)); 
+        public void RemoveAt(int index) => ProcessChanges(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, _items[index], index)); 
         
 //        public event PropertyChangedEventHandler PropertyChanged;
     }

@@ -233,6 +233,55 @@ namespace ATZ.ObservableLists.Tests
 
             monitor.Should().Raise(nameof(ol.CollectionChanged));
         }
+
+        [Test]
+        public void NotifyWhenMovingItemInTheList()
+        {
+            var ol = new ObservableList<int> { 42, 12 };
+            ol.CollectionChanged += (o, e) =>
+            {
+                e.Action.Should().Be(NotifyCollectionChangedAction.Move);
+                e.OldItems[0].Should().Be(42);
+                e.NewItems[0].Should().Be(42);
+                e.OldStartingIndex.Should().Be(0);
+                e.NewStartingIndex.Should().Be(1);
+            };
+
+            var monitor = ol.Monitor();
+            ol.Move(0, 1);
+
+            monitor.Should().Raise(nameof(ol.CollectionChanged));
+        }
+
+        [Test]
+        public void MoveItemLowerCorrectly()
+        {
+            var ol = new ObservableList<int> { 2, 3, 1 };
+            ol.Move(2, 0);
+
+            ol.Should().ContainInOrder(1, 2, 3).And.HaveCount(3);
+        }
+
+        [Test]
+        public void MoveItemHigherCorrectly()
+        {
+            var ol = new ObservableList<int> { 3, 1, 2 };
+            ol.Move(0, 2);
+
+            ol.Should().ContainInOrder(1, 2, 3).And.HaveCount(3);
+        }
+
+        [Test]
+        public void NotRaiseCollectionChangedWhenItemIsMovedToItsCurrentPosition()
+        {
+            var ol = new ObservableList<int> { 1, 2, 3 };
+
+            var monitor = ol.Monitor();
+            ol.Move(1, 1);
+            ol.Should().ContainInOrder(1, 2, 3).And.HaveCount(3);
+            
+            monitor.Should().NotRaise(nameof(ol.CollectionChanged));
+        }
         #endregion
     }
 }
