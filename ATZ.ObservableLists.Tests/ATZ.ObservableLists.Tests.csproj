@@ -33,6 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ApiExpectations.cs" />
     <Compile Include="ObservableListShould.cs" />
   </ItemGroup>
   <ItemGroup>
