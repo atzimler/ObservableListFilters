@@ -10,6 +10,7 @@ namespace ATZ.ObservableLists
         : IReadOnlyList<T>, IList, IList<T>, INotifyCollectionChanged
         //        : IList<T>, IList, IReadOnlyList<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
+        private readonly EqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;
         private readonly List<T> _items = new List<T>();
 
         object IList.this[int index]
@@ -46,8 +47,7 @@ namespace ATZ.ObservableLists
                     break;
                 
                 case NotifyCollectionChangedAction.Move:
-                    if (e.OldStartingIndex < _items.Count && c.Equals(_items[e.OldStartingIndex], (T)e.OldItems[0])
-                                                          && e.NewStartingIndex <= _items.Count)
+                    if (AssertOldItemHasNotChanged(e) && e.NewStartingIndex <= _items.Count)
                     {
                         _items.RemoveAt(e.OldStartingIndex);
                         _items.Insert(e.NewStartingIndex, (T)e.OldItems[0]);
@@ -56,7 +56,7 @@ namespace ATZ.ObservableLists
                     break;
                 
                 case NotifyCollectionChangedAction.Remove:
-                    if (e.OldStartingIndex < _items.Count && c.Equals(_items[e.OldStartingIndex], (T)e.OldItems[0]))
+                    if (AssertOldItemHasNotChanged(e))
                     {
                         _items.RemoveAt(e.OldStartingIndex);
                         return true;
@@ -64,7 +64,7 @@ namespace ATZ.ObservableLists
                     break;
                 
                 case NotifyCollectionChangedAction.Replace:
-                    if (e.OldStartingIndex < _items.Count && c.Equals(_items[e.OldStartingIndex], (T)e.OldItems[0]))
+                    if (AssertOldItemHasNotChanged(e))
                     {
                         _items[e.OldStartingIndex] = (T)e.NewItems[0];
                         return true;
@@ -78,6 +78,9 @@ namespace ATZ.ObservableLists
 
             return false;
         }
+
+        private bool AssertOldItemHasNotChanged(NotifyCollectionChangedEventArgs e)
+            => e.OldStartingIndex < _items.Count && _equalityComparer.Equals(_items[e.OldStartingIndex], (T)e.OldItems[0]);
         
         private T AssertArgumentIsOfTypeT(object item)
         {
