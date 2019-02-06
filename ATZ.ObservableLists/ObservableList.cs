@@ -33,15 +33,37 @@ namespace ATZ.ObservableLists
 
         public event NotifyCollectionChangedEventHandler CollectionChanged = delegate {  };
 
-        private void ApplyChange(NotifyCollectionChangedEventArgs e)
+        private bool ApplyChange(NotifyCollectionChangedEventArgs e)
         {
+            var c = EqualityComparer<T>.Default;
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    _items.Insert(e.NewStartingIndex, (T)e.NewItems[0]);
+                    if (e.NewStartingIndex <= _items.Count)
+                    {
+                        _items.Insert(e.NewStartingIndex, (T)e.NewItems[0]);
+                        return true;
+                    }
+                    break;
+                
+                case NotifyCollectionChangedAction.Remove:
+                    if (e.OldStartingIndex < _items.Count && c.Equals(_items[e.OldStartingIndex], (T)e.OldItems[0]))
+                    {
+                        _items.RemoveAt(e.OldStartingIndex);
+                        return true;
+                    }
+                    break;
+                
+                case NotifyCollectionChangedAction.Replace:
+                    if (e.OldStartingIndex < _items.Count && c.Equals(_items[e.OldStartingIndex], (T)e.OldItems[0]))
+                    {
+                        _items[e.OldStartingIndex] = (T)e.NewItems[0];
+                        return true;
+                    }
                     break;
             }
-            OnCollectionChanged(e);
+
+            return false;
         }
         
         private T AssertArgumentIsOfTypeT(object item)
@@ -61,7 +83,17 @@ namespace ATZ.ObservableLists
 
         private readonly Queue<NotifyCollectionChangedEventArgs> _changes = new Queue<NotifyCollectionChangedEventArgs>();
         private bool _processing;
-        private void ProcessChange(NotifyCollectionChangedEventArgs e)
+
+        private void ProcessChange()
+        {
+            var change = _changes.Dequeue();
+            if (ApplyChange(change))
+            {
+                OnCollectionChanged(change);
+            };
+        }
+        
+        private void ProcessChanges(NotifyCollectionChangedEventArgs e)
         {
             _changes.Enqueue(e);
             if (_processing)
@@ -73,8 +105,7 @@ namespace ATZ.ObservableLists
             {
                 while (_changes.Count > 0)
                 {
-                    var change = _changes.Dequeue();
-                    ApplyChange(change);
+                    ProcessChange();
                 }
             }
             finally
@@ -88,10 +119,8 @@ namespace ATZ.ObservableLists
             CollectionChanged(this, e);
         }
 
-        private void SetAt(int index, T value)
-        {
-            _items[index] = value;
-        }
+        private void SetAt(int index, T value) 
+            => ProcessChanges(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, value, _items[index], index));
         
         int IList.Add(object item)
         {
@@ -120,7 +149,7 @@ namespace ATZ.ObservableLists
         public int IndexOf(T item) => _items.IndexOf(item);
 
         void IList.Insert(int index, object item) => Insert(index, AssertArgumentIsOfTypeT(item));
-        public void Insert(int index, T item) => ProcessChange(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] { item }, index));
+        public void Insert(int index, T item) => ProcessChanges(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] { item }, index));
 
         void IList.Remove(object item)
         {
@@ -135,10 +164,7 @@ namespace ATZ.ObservableLists
             return _items.Remove(item);
         }
 
-        public void RemoveAt(int index)
-        {
-            _items.RemoveAt(index);
-        }
+        public void RemoveAt(int index) => ProcessChanges(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _items[index] }, index)); 
         
 //        public event PropertyChangedEventHandler PropertyChanged;
     }

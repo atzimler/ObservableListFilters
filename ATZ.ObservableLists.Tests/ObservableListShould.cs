@@ -167,6 +167,42 @@ namespace ATZ.ObservableLists.Tests
             ol.Insert(1, 42);
             monitor.Should().Raise(nameof(ol.CollectionChanged));
         }
+
+        [Test]
+        public void NotifyWhenRemovingItemFromTheList()
+        {
+            var ol = new ObservableList<int> { 12, 13, 42 };
+
+            var monitor = ol.Monitor();
+            ol.CollectionChanged += (o, e) =>
+            {
+                e.Action.Should().Be(NotifyCollectionChangedAction.Remove);
+                e.OldStartingIndex.Should().Be(1);
+                e.OldItems[0].Should().Be(13);
+            };
+            
+            ol.RemoveAt(1);
+            monitor.Should().Raise(nameof(ol.CollectionChanged));
+        }
+
+        [Test]
+        public void NotifyWhenReplacingItemInTheList()
+        {
+            var ol = new ObservableList<int> { 8, 13, 42 };
+
+            var monitor = ol.Monitor();
+            ol.CollectionChanged += (o, e) =>
+            {
+                e.Action.Should().Be(NotifyCollectionChangedAction.Replace);
+                e.NewStartingIndex.Should().Be(1);
+                e.OldStartingIndex.Should().Be(1);
+                e.NewItems[0].Should().Be(12);
+                e.OldItems[0].Should().Be(13);
+            };
+
+            ol[1] = 12;
+            monitor.Should().Raise(nameof(ol.CollectionChanged));
+        }
         #endregion
     }
 }
