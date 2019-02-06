@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -88,6 +90,62 @@ namespace ATZ.ObservableLists.Tests
             var ol = new ObservableList<int> { 42 };
 
             ol[0].Should().Be(42);
+        }
+        #endregion
+        
+        #region IList
+        [Test]
+        public void ThrowProperExceptionWhenAddingObjectWithIncorrectType()
+        {
+            foreach (var obj in new object[] { "x", 13.42 })
+            {
+                var comparisonList = new List<int>();
+                var correctException = Assert.Throws<ArgumentException>(() => ((IList)comparisonList).Add(obj));
+            
+                var ol = new ObservableList<int>();
+                var ex = Assert.Throws<ArgumentException>(() => ((IList)ol).Add(obj));
+                ex.Message.Should().Be(correctException.Message);
+                ex.ParamName.Should().Be(correctException.ParamName);
+            }
+        }
+
+        [Test]
+        public void InsertItemCorrectly()
+        {
+            var ol = new ObservableList<int>();
+            ((IList)ol).Insert(0, 42);
+
+            ol.Count.Should().Be(1);
+            ol[0].Should().Be(42);
+        }
+
+        [Test]
+        public void IgnoreRemovalRequestOfIncorrectType()
+        {
+            var ol = new ObservableList<int?> { null };
+            ((IList)ol).Remove(13.42);
+
+            ol.Count.Should().Be(1);
+            ol[0].Should().BeNull();
+        }
+
+        [Test]
+        public void RemoveItemWithCorrectTypePresentInTheList()
+        {
+            var ol = new ObservableList<int> { 13, 42 };
+            ((IList)ol).Remove(13);
+
+            ol.Count.Should().Be(1);
+            ol[0].Should().Be(42);
+        }
+
+        [Test]
+        public void RemoveItemAtSpecifiedIndex()
+        {
+            var ol = new ObservableList<int> { 8, 13, 42 };
+            ol.RemoveAt(1);
+
+            ol.Should().ContainInOrder(new[] { 8, 42 }).And.HaveCount(2);
         }
         #endregion
     }

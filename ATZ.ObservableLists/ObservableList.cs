@@ -3,15 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace ATZ.ObservableLists
 {
     public class ObservableList<T> 
-        : ICollection<T>, ICollection, IReadOnlyList<T>
+        : ICollection<T>, IReadOnlyList<T>, IList
         //        : IList<T>, IList, IReadOnlyList<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
         private readonly List<T> _items = new List<T>();
 
+        object IList.this[int index]
+        {
+            get => _items[index];
+            set => SetAt(index, AssertArgumentIsOfTypeT(value));
+        }
 
         public T this[int index]
         {
@@ -19,9 +25,38 @@ namespace ATZ.ObservableLists
 //            set => _items[index] = value;
         }
 
+        public int Count => _items.Count;
+        public bool IsFixedSize => ((IList)_items).IsFixedSize;
         public bool IsReadOnly => ((ICollection<T>)_items).IsReadOnly;
         public bool IsSynchronized => ((ICollection)_items).IsSynchronized;
         public object SyncRoot => ((ICollection)_items).SyncRoot;
+
+        private T AssertArgumentIsOfTypeT(object item)
+        {
+            try
+            {
+                return (T)item;
+            }
+            catch (InvalidCastException)
+            {
+                // ReSharper disable once NotResolvedInText => Behaving exactly as the .NET Framework.
+                throw new ArgumentException(
+                    $@"The value ""{Convert.ToString(item, CultureInfo.InvariantCulture)}"" is not of type ""{typeof(T)}"" and cannot be used in this generic collection.", 
+                    "value");
+            }
+        }
+
+        private void SetAt(int index, T value)
+        {
+            _items[index] = value;
+        }
+        
+        int IList.Add(object item)
+        {
+            Add(AssertArgumentIsOfTypeT(item));
+
+            return Count - 1;
+        }
         
         public void Add(T item)
         {
@@ -32,7 +67,8 @@ namespace ATZ.ObservableLists
         {
             _items.Clear();            
         }
-        
+
+        bool IList.Contains(object item) => ((IList)_items).Contains(item);
         public bool Contains(T item) => _items.Contains(item);
 
         public void CopyTo(Array array, int index)
@@ -45,15 +81,34 @@ namespace ATZ.ObservableLists
             _items.CopyTo(array, index);
         }
 
-        public int Count => _items.Count;
-
+        IEnumerator IEnumerable.GetEnumerator() => _items.GetEnumerator();
         public IEnumerator<T> GetEnumerator() => _items.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => _items.GetEnumerator();
+        int IList.IndexOf(object item) => ((IList)_items).IndexOf(item);
 
+        void IList.Insert(int index, object item) => Insert(index, AssertArgumentIsOfTypeT(item));
+
+        public void Insert(int index, T item)
+        {
+            _items.Insert(index, item);
+        }
+
+        void IList.Remove(object item)
+        {
+            if (item is T x)
+            {
+                Remove(x);
+            }
+        }
+        
         public bool Remove(T item)
         {
             return _items.Remove(item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            _items.RemoveAt(index);
         }
         
 //        private int _count;
@@ -61,47 +116,7 @@ namespace ATZ.ObservableLists
 //        private int _count1;
 //        private bool _isReadOnly1;
 //
-//        public int IndexOf(object value)
-//        {
-//            throw new NotImplementedException();
-//        }
-//
-//        public void Insert(int index, object value)
-//        {
-//            throw new NotImplementedException();
-//        }
-//
-//        void IList.RemoveAt(int index)
-//        {
-//            throw new NotImplementedException();
-//        }
-//
-//        public bool IsFixedSize { get; }
-//
-//        bool IList.IsReadOnly
-//        {
-//            get { return _isReadOnly1; }
-//        }
-//
-//        object IList.this[int index] { get; set; }
-//        public void CopyTo(Array array, int index)
-//        {
-//            throw new NotImplementedException();
-//        }
-//
-//        public bool IsSynchronized { get; }
-//        public object SyncRoot { get; }
-//
-//        int ICollection<T>.Count
-//        {
-//            get { return _count; }
-//        }
-//
-//        bool ICollection<T>.IsReadOnly
-//        {
-//            get { return _isReadOnly; }
-//        }
-//
+
 //        public int IndexOf(T item)
 //        {
 //            throw new NotImplementedException();
@@ -111,12 +126,6 @@ namespace ATZ.ObservableLists
 //        {
 //            throw new NotImplementedException();
 //        }
-//
-//        void IList<T>.RemoveAt(int index)
-//        {
-//            throw new NotImplementedException();
-//        }
-//
 //
 //        public event NotifyCollectionChangedEventHandler CollectionChanged;
 //        public event PropertyChangedEventHandler PropertyChanged;
