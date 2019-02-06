@@ -327,6 +327,29 @@ namespace ATZ.ObservableLists.Tests
 
             ol.Should().ContainInOrder(0, 1, 2, 3).And.HaveCount(4);
         }
+
+        [Test]
+        public void NotRemoveItemIfItHasBeenReplacedWhileNotifyCollectionChangedWasProcessed()
+        {
+            var ol = new ObservableList<int> { 1, 1, 2, 2 };
+            var changeHandlerExecuted = false;
+
+            ol.CollectionChanged += (o, e) =>
+            {
+                if (changeHandlerExecuted)
+                {
+                    return;
+                }
+
+                ol[3] = 3;
+                ol.RemoveAt(3);
+                changeHandlerExecuted = true;
+            };
+
+            ol[0] = 0;
+
+            ol.Should().ContainInOrder(0, 1, 2, 3).And.HaveCount(4);
+        }
         #endregion
     }
 }

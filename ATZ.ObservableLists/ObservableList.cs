@@ -63,12 +63,8 @@ namespace ATZ.ObservableLists
                     break;
                 
                 case NotifyCollectionChangedAction.Remove:
-                    if (OldItemHasNotChanged(e))
-                    {
-                        _items.RemoveAt(e.OldStartingIndex);
-                        return true;
-                    }
-                    break;
+                    _items.RemoveAt(e.OldStartingIndex);
+                    return true;
                 
                 case NotifyCollectionChangedAction.Replace:
                     _items[e.OldStartingIndex] = (T)e.NewItems[0];
