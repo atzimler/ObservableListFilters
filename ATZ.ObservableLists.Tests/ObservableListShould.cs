@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -201,6 +202,18 @@ namespace ATZ.ObservableLists.Tests
             };
 
             ol[1] = 12;
+            monitor.Should().Raise(nameof(ol.CollectionChanged));
+        }
+
+        [Test]
+        public void NotifyWhenClearingTheList()
+        {
+            var ol = new ObservableList<int> { 4, 13 };
+            ol.CollectionChanged += (o, e) => { e.Action.Should().Be(NotifyCollectionChangedAction.Reset); };
+
+            var monitor = ol.Monitor();
+            ol.Clear();
+
             monitor.Should().Raise(nameof(ol.CollectionChanged));
         }
         #endregion

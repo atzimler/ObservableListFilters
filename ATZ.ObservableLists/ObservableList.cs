@@ -61,6 +61,10 @@ namespace ATZ.ObservableLists
                         return true;
                     }
                     break;
+                
+                case NotifyCollectionChangedAction.Reset:
+                    _items.Clear();
+                    return true;
             }
 
             return false;
@@ -131,10 +135,7 @@ namespace ATZ.ObservableLists
 
         public void Add(T item) => Insert(_items.Count, item);
 
-        public void Clear()
-        {
-            _items.Clear();            
-        }
+        public void Clear() => ProcessChanges(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 
         bool IList.Contains(object item) => ((IList)_items).Contains(item);
         public bool Contains(T item) => _items.Contains(item);
@@ -161,6 +162,7 @@ namespace ATZ.ObservableLists
         
         public bool Remove(T item)
         {
+            // TODO: This should also send notification.
             return _items.Remove(item);
         }
 
