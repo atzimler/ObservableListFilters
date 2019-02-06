@@ -35,12 +35,6 @@ namespace ATZ.ObservableLists
 
         public event NotifyCollectionChangedEventHandler CollectionChanged = delegate {  };
 
-        private bool NewPositionIsValidForInsert(NotifyCollectionChangedEventArgs e)
-            => e.Action != NotifyCollectionChangedAction.Add || e.NewStartingIndex <= _items.Count;
-
-        private bool NewPositionIsValidForMove(NotifyCollectionChangedEventArgs e)
-            => e.Action != NotifyCollectionChangedAction.Move || e.NewStartingIndex < _items.Count;
-        
         private bool ApplyChange(NotifyCollectionChangedEventArgs e)
         {
             if (!OldItemIsValid(e) || !NewPositionIsValidForInsert(e) || !NewPositionIsValidForMove(e))
@@ -87,7 +81,13 @@ namespace ATZ.ObservableLists
                     "value");
             }
         }
+        
+        private bool NewPositionIsValidForInsert(NotifyCollectionChangedEventArgs e)
+            => e.Action != NotifyCollectionChangedAction.Add || e.NewStartingIndex <= _items.Count;
 
+        private bool NewPositionIsValidForMove(NotifyCollectionChangedEventArgs e)
+            => e.Action != NotifyCollectionChangedAction.Move || e.NewStartingIndex < _items.Count;
+        
         private bool OldItemHasNotChanged(NotifyCollectionChangedEventArgs e)
             => e.OldStartingIndex < _items.Count && _equalityComparer.Equals(_items[e.OldStartingIndex], (T)e.OldItems[0]);
 
