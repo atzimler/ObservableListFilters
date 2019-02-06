@@ -54,7 +54,7 @@ namespace ATZ.ObservableLists
                     break;
                 
                 case NotifyCollectionChangedAction.Move:
-                    if (OldItemHasNotChanged(e) && e.NewStartingIndex <= _items.Count)
+                    if (e.NewStartingIndex <= _items.Count)
                     {
                         _items.RemoveAt(e.OldStartingIndex);
                         _items.Insert(e.NewStartingIndex, (T)e.OldItems[0]);
