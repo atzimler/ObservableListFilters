@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using ATZ.ObservableLists;
 
 namespace ATZ.ObservableCollectionFilters
 {
@@ -29,7 +30,7 @@ namespace ATZ.ObservableCollectionFilters
             }
         }
         
-        public ObservableCollection<TItem> FilteredItems { get; } = new ObservableCollection<TItem>();
+        public ObservableList<TItem> FilteredItems { get; } = new ObservableList<TItem>();
 
         public ObservableCollection<TItem> ItemsSource
         {

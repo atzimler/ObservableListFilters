@@ -37,6 +37,10 @@
       <Project>{ac7f8fa1-83be-4f7a-90f8-7cc19b122b52}</Project>
       <Name>ATZ.ObservableCollectionFilters</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ATZ.ObservableLists\ATZ.ObservableLists.csproj">
+      <Project>{df8a6cae-4a5a-4dae-993c-db6d51ca3ca1}</Project>
+      <Name>ATZ.ObservableLists</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ObservableCollectionFilterShould.cs" />

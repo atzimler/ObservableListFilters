@@ -17,5 +17,8 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <DefineConstants>TRACE;JETBRAINS_ANNOTATIONS</DefineConstants>
     </PropertyGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\ATZ.ObservableLists\ATZ.ObservableLists.csproj" />
+    </ItemGroup>
 
 </Project>

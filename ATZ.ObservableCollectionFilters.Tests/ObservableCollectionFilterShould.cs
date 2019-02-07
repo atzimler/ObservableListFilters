@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using FluentAssertions;
@@ -67,7 +68,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
             VerifyItems(filter.ItemsSource, correctItemsSource);
         }
 
-        private void VerifyItems(ObservableCollection<TestClass> items, int[] correctValues)
+        private void VerifyItems(IEnumerable<TestClass> items, int[] correctValues)
         {
             items.Select(_ => _.Value).Should().ContainInOrder(correctValues).And.HaveCount(correctValues.Length);
         }
