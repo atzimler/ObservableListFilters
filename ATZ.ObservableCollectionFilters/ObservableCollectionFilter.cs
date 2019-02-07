@@ -169,7 +169,7 @@ namespace ATZ.ObservableCollectionFilters
                 return;
             }
             
-            ItemsSource.Remove(e.OldItems[0] as TItem);
+            _itemsSource?.Remove(e.OldItems[0] as TItem);
         }
         
         private void HandleRemovalFromItemsSource(NotifyCollectionChangedEventArgs e)
