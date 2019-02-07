@@ -35,11 +35,11 @@ namespace ATZ.ObservableLists
 
         public event NotifyCollectionChangedEventHandler CollectionChanged = delegate {  };
 
-        private bool ApplyChange(NotifyCollectionChangedEventArgs e)
+        private NotifyCollectionChangedEventArgs ApplyChange(NotifyCollectionChangedEventArgs e)
         {
             if (IsObsoleteRequest(e))
             {
-                return false;
+                return null;
             }
 
             ApplyReset(e);
@@ -47,7 +47,7 @@ namespace ATZ.ObservableLists
             ApplyRemoveAt(e);
             ApplyInsertAt(e);
 
-            return true;
+            return e;
         }
 
         private void ApplyInsertAt(NotifyCollectionChangedEventArgs e)
@@ -116,7 +116,7 @@ namespace ATZ.ObservableLists
         private void ProcessChange()
         {
             var change = _changes.Dequeue();
-            if (ApplyChange(change))
+            if (ApplyChange(change) != null)
             {
                 OnCollectionChanged(change);
             }
