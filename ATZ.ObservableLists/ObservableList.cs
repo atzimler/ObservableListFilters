@@ -45,17 +45,22 @@ namespace ATZ.ObservableLists
             ApplyReset(e);
             ApplyReplace(e);
             ApplyRemoveAt(e);
-            ApplyInsertAt(e);
-
-            return e;
+            return ApplyInsertAt(e);
         }
 
-        private void ApplyInsertAt(NotifyCollectionChangedEventArgs e)
+        private NotifyCollectionChangedEventArgs ApplyInsertAt(NotifyCollectionChangedEventArgs e)
         {
+            if (e.Action == NotifyCollectionChangedAction.Add && e.NewStartingIndex == -1)
+            {
+                e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, e.NewItems[0], _items.Count);
+            }
+            
             if (e.Action == NotifyCollectionChangedAction.Add || e.Action == NotifyCollectionChangedAction.Move)
             {
                 _items.Insert(e.NewStartingIndex, (T)e.NewItems[0]);
             }
+
+            return e;
         }
 
         private void ApplyRemoveAt(NotifyCollectionChangedEventArgs e)
@@ -160,7 +165,7 @@ namespace ATZ.ObservableLists
             return Count - 1;
         }
 
-        public void Add(T item) => Insert(_items.Count, item);
+        public void Add(T item) => ProcessChanges(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
 
         public void Clear() => ProcessChanges(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 

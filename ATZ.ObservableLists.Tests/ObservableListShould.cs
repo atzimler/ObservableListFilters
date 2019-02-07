@@ -398,6 +398,30 @@ namespace ATZ.ObservableLists.Tests
             ol.RemoveAt(3);
             ol.Should().ContainInOrder(1, 2).And.HaveCount(2);
         }
+
+        [Test]
+        public void AllowMultipleAddsDuringNotifyCollectionChangedProcessing()
+        {
+            var ol = new ObservableList<int>();
+            var changeHandlerExecuted = false;
+
+            ol.CollectionChanged += (o, e) =>
+            {
+                if (changeHandlerExecuted)
+                {
+                    return;
+                }
+
+                ol.RemoveAt(0);
+                ol.Add(1);
+                ol.Add(2);
+                ol.Add(3);
+                changeHandlerExecuted = true;
+            };
+            
+            ol.Add(5);
+            ol.Should().ContainInOrder(1, 2, 3).And.HaveCount(3);
+        }
         #endregion
     }
 }
