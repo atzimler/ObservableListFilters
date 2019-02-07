@@ -115,10 +115,11 @@ namespace ATZ.ObservableLists
         
         private void ProcessChange()
         {
-            var change = _changes.Dequeue();
-            if (ApplyChange(change) != null)
+            var requestedChange = _changes.Dequeue();
+            var appliedChange = ApplyChange(requestedChange);
+            if (appliedChange != null)
             {
-                OnCollectionChanged(change);
+                OnCollectionChanged(appliedChange);
             }
         }
         
