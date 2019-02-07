@@ -164,6 +164,11 @@ namespace ATZ.ObservableCollectionFilters
 
         private void HandleRemovalFromFilteredItems(NotifyCollectionChangedEventArgs e)
         {
+            if (FilteredItems.OriginalRequest.Action == NotifyCollectionChangedAction.Replace)
+            {
+                return;
+            }
+            
             ItemsSource.Remove(e.OldItems[0] as TItem);
         }
         
