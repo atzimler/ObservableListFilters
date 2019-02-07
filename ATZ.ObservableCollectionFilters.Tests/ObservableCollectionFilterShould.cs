@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+using ATZ.ObservableLists;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -29,7 +29,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
             var filter = new ObservableCollectionFilter<TestClass>
             {
                 FilterFunction = _ => _.Value % 2 == 0,
-                ItemsSource = new ObservableCollection<TestClass>()
+                ItemsSource = new ObservableList<TestClass>()
             };
 
             foreach (var initialValue in initialValues)
@@ -57,7 +57,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
             var filter = new ObservableCollectionFilter<TestClass>
             {
                 FilterFunction = _ => _.Value % 2 == 0,
-                ItemsSource = new ObservableCollection<TestClass>()
+                ItemsSource = new ObservableList<TestClass>()
             };
 
             filter.ItemsSource.Add(new TestClass { Value = 2 });
@@ -89,7 +89,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
             var filter = new ObservableCollectionFilter<TestClass>
             {
                 FilterFunction = _ => _.Value % 2 == 0,
-                ItemsSource = new ObservableCollection<TestClass>()
+                ItemsSource = new ObservableList<TestClass>()
             };
             
             filter.ItemsSource.Add(new TestClass { Value = initialValue });
@@ -129,7 +129,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
         [Test]
         public void RetainReferenceOfItemsSource()
         {
-            var itemsSource = new ObservableCollection<object>();
+            var itemsSource = new ObservableList<object>();
             
             var filter = new ObservableCollectionFilter<object>();
             filter.ItemsSource.Should().BeNull();
@@ -148,7 +148,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
         [Test]
         public void AddingItemToItemsSourceShouldBeAddedToFilteredItemsWhenMatchingFilter()
         {
-            var itemsSource = new ObservableCollection<TestClass>();
+            var itemsSource = new ObservableList<TestClass>();
 
             var filter = new ObservableCollectionFilter<TestClass>
             {
@@ -164,7 +164,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
         [Test]
         public void AddingItemToItemsSourceShouldNotBeAddedToFilteredItemsWhenNotMatchingFilter()
         {
-            var itemsSource = new ObservableCollection<TestClass>();
+            var itemsSource = new ObservableList<TestClass>();
 
             var filter = new ObservableCollectionFilter<TestClass>
             {
@@ -182,7 +182,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
         {
             var filter = new ObservableCollectionFilter<TestClass>
             {
-                ItemsSource = new ObservableCollection<TestClass>()
+                ItemsSource = new ObservableList<TestClass>()
             };
 
             var item1 = new TestClass { Value = 1 };
@@ -412,7 +412,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
             var filter = new ObservableCollectionFilter<TestClass>
             {
                 FilterFunction = null,
-                ItemsSource = new ObservableCollection<TestClass>()
+                ItemsSource = new ObservableList<TestClass>()
             };
             filter.ItemsSource.Add(_items[2]);
             
@@ -442,7 +442,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
             var filter = CreateFilterWithItems(new[] { 4 });
             VerifyItems(filter.FilteredItems, new[] { 4 });
             
-            var itemsSource = new ObservableCollection<TestClass>
+            var itemsSource = new ObservableList<TestClass>
             {
                 new TestClass { Value = 1 },
                 new TestClass { Value = 2 }
@@ -471,7 +471,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
             var filter = new ObservableCollectionFilter<TestClass>
             {
                 FilterFunction = _ => _.Value % 2 == 0,
-                ItemsSource = new ObservableCollection<TestClass>()
+                ItemsSource = new ObservableList<TestClass>()
             };
 
             for (var i = 0; i < 10; ++i)
@@ -491,7 +491,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
             var filter = new ObservableCollectionFilter<TestClass>
             {
                 FilterFunction = _ => _.Value % 2 == 0,
-                ItemsSource = new ObservableCollection<TestClass> { new TestClass { Value =  2 }}
+                ItemsSource = new ObservableList<TestClass> { new TestClass { Value =  2 }}
             };
 
             filter.FilteredItems.CollectionChanged += delegate

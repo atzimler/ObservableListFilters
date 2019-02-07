@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using ATZ.ObservableLists;
 
@@ -12,7 +11,7 @@ namespace ATZ.ObservableCollectionFilters
         private readonly Dictionary<NotifyCollectionChangedAction, Action<NotifyCollectionChangedEventArgs>> _filterCollectionChangeHandlers;
         private Func<TItem, bool> _filterFunction = _ => true;
         private readonly InternalChange _internalChange = new InternalChange();
-        private ObservableCollection<TItem> _itemsSource;
+        private ObservableList<TItem> _itemsSource;
         private readonly Dictionary<NotifyCollectionChangedAction, Action<NotifyCollectionChangedEventArgs>> _sourceCollectionChangeHandlers;
 
         public Func<TItem, bool> FilterFunction
@@ -32,7 +31,7 @@ namespace ATZ.ObservableCollectionFilters
         
         public ObservableList<TItem> FilteredItems { get; } = new ObservableList<TItem>();
 
-        public ObservableCollection<TItem> ItemsSource
+        public ObservableList<TItem> ItemsSource
         {
             get => _itemsSource;
             set
