@@ -113,6 +113,11 @@ namespace ATZ.ObservableCollectionFilters
 
         private void HandleAdditionToFilteredItems(NotifyCollectionChangedEventArgs e)
         {
+            if (FilteredItems.OriginalRequest.Action == NotifyCollectionChangedAction.Reset)
+            {
+                return;
+            }
+            
             var item = e.NewItems[0] as TItem;
             if (!ItemPassesFilter(item) || _itemsSource == null)
             {

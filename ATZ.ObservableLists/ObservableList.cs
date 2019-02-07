@@ -13,7 +13,7 @@ namespace ATZ.ObservableLists
         private readonly Queue<NotifyCollectionChangedEventArgs> _changes = new Queue<NotifyCollectionChangedEventArgs>();
         private readonly EqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;
         private readonly List<T> _items = new List<T>();
-        private bool _processing;
+        private NotifyCollectionChangedEventArgs _originalRequest;
 
         object IList.this[int index]
         {
@@ -31,6 +31,7 @@ namespace ATZ.ObservableLists
         public bool IsFixedSize => ((IList)_items).IsFixedSize;
         public bool IsReadOnly => ((ICollection<T>)_items).IsReadOnly;
         public bool IsSynchronized => ((ICollection)_items).IsSynchronized;
+        public NotifyCollectionChangedEventArgs OriginalRequest => _originalRequest;
         public object SyncRoot => ((ICollection)_items).SyncRoot;
 
         public event NotifyCollectionChangedEventHandler CollectionChanged = delegate {  };
@@ -131,14 +132,14 @@ namespace ATZ.ObservableLists
         private void ProcessChanges(NotifyCollectionChangedEventArgs e)
         {
             _changes.Enqueue(e);
-            if (_processing)
+            if (_originalRequest != null)
             {
                 return;
             }
 
             try
             {
-                _processing = true;
+                _originalRequest = e;
                 while (_changes.Count > 0)
                 {
                     ProcessChange();
@@ -146,7 +147,7 @@ namespace ATZ.ObservableLists
             }
             finally
             {
-                _processing = false;
+                _originalRequest = null;
             }
         }
         
