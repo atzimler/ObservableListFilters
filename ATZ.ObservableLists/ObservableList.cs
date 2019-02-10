@@ -35,6 +35,7 @@ namespace ATZ.ObservableLists
         public object SyncRoot => ((ICollection)_items).SyncRoot;
 
         public event NotifyCollectionChangedEventHandler CollectionChanged = delegate {  };
+        public event EventHandler<ItemUpdatedEventArgs> ItemUpdated = delegate { }; 
 
         private NotifyCollectionChangedEventArgs ApplyChange(NotifyCollectionChangedEventArgs e)
         {
@@ -156,6 +157,11 @@ namespace ATZ.ObservableLists
             CollectionChanged(this, e);
         }
 
+        protected virtual void OnItemUpdated(ItemUpdatedEventArgs e)
+        {
+            ItemUpdated(this, e);
+        }
+
         private void SetAt(int index, T value) 
             => ProcessChanges(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, value, _items[index], index));
         
@@ -185,6 +191,11 @@ namespace ATZ.ObservableLists
         void IList.Insert(int index, object item) => Insert(index, AssertArgumentIsOfTypeT(item));
         public void Insert(int index, T item) => ProcessChanges(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item , index));
 
+        public void ItemUpdatedAt(int index)
+        {
+            OnItemUpdated(new ItemUpdatedEventArgs(index));
+        }
+        
         public void Move(int oldIndex, int newIndex)
         {
             if (oldIndex == newIndex)

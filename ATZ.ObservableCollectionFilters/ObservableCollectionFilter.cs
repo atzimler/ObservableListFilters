@@ -44,6 +44,7 @@ namespace ATZ.ObservableCollectionFilters
                 if (_itemsSource != null)
                 {
                     _itemsSource.CollectionChanged -= SourceCollectionChanged;
+                    _itemsSource.ItemUpdated -= SourceItemUpdated;
                 }
 
                 _itemsSource = value;
@@ -51,6 +52,7 @@ namespace ATZ.ObservableCollectionFilters
                 if (_itemsSource != null)
                 {
                     _itemsSource.CollectionChanged += SourceCollectionChanged;
+                    _itemsSource.ItemUpdated += SourceItemUpdated;
                 }
                 
                 FilteredItems.Clear();
@@ -246,6 +248,21 @@ namespace ATZ.ObservableCollectionFilters
 
             _internalChange.Execute(() => _sourceCollectionChangeHandlers[e.Action](e));
         }
+        
+        private void SourceItemUpdated(object sender, ItemUpdatedEventArgs e)
+        {
+            _internalChange.Execute(() =>
+            {
+                if (ItemPassesFilter(_itemsSource[e.Index]))
+                {
+                    AddItemToFilteredItemsFromItemsSourceAt(e.Index);
+                }
+                else
+                {
+                    RemoveItemFromFilteredItems(_itemsSource[e.Index]);
+                }
+            });
+        }
 
         private int TranslateSourceIndex(int sourceIndex)
         {
@@ -293,19 +310,5 @@ namespace ATZ.ObservableCollectionFilters
             });
         }
 
-        public void SourceItemUpdated(int index)
-        {
-            _internalChange.Execute(() =>
-            {
-                if (ItemPassesFilter(_itemsSource[index]))
-                {
-                    AddItemToFilteredItemsFromItemsSourceAt(index);
-                }
-                else
-                {
-                    RemoveItemFromFilteredItems(_itemsSource[index]);
-                }
-            });
-        }
     }
 }
