@@ -80,6 +80,7 @@ namespace ATZ.ObservableCollectionFilters
             };
 
             FilteredItems.CollectionChanged += FilteredCollectionChanged;
+            FilteredItems.ItemUpdated += FilteredItemUpdated;
         }
 
         private void AddItemToFilteredItemsFromItemsSourceAt(int index)
@@ -110,6 +111,17 @@ namespace ATZ.ObservableCollectionFilters
             }
 
             _internalChange.Execute(() => _filterCollectionChangeHandlers[e.Action](e));
+        }
+
+        private void FilteredItemUpdated(object sender, ItemUpdatedEventArgs e)
+        {
+            _internalChange.Execute(() =>
+            {
+                if (!ItemPassesFilter(FilteredItems[e.Index]))
+                {
+                    FilteredItems.RemoveAt(e.Index);
+                }
+            });
         }
 
         private void HandleAdditionToFilteredItems(NotifyCollectionChangedEventArgs e)
@@ -297,17 +309,6 @@ namespace ATZ.ObservableCollectionFilters
             var referenceItem = FilteredItems[targetIndex + referencePosition];
             var referenceIndex = _itemsSource.IndexOf(referenceItem);
             return referenceIndex - referencePosition;
-        }
-
-        public void FilteredItemUpdated(int index)
-        {
-            _internalChange.Execute(() =>
-            {
-                if (!ItemPassesFilter(FilteredItems[index]))
-                {
-                    FilteredItems.RemoveAt(index);
-                }
-            });
         }
 
     }

@@ -62,7 +62,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
 
             filter.ItemsSource.Add(new TestClass { Value = 2 });
             filter.ItemsSource[0].Value = newValue;
-            filter.FilteredItemUpdated(0);
+            filter.FilteredItems.ItemUpdatedAt(0);
             
             VerifyItems(filter.FilteredItems, correctFilteredItems);
             VerifyItems(filter.ItemsSource, correctItemsSource);
