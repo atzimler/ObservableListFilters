@@ -62,7 +62,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
 
             filter.ItemsSource.Add(new TestClass { Value = 2 });
             filter.ItemsSource[0].Value = newValue;
-            filter.FilteredItems.ItemUpdatedAt(0);
+            filter.FilteredItems.ItemUpdateAt(0);
             
             VerifyItems(filter.FilteredItems, correctFilteredItems);
             VerifyItems(filter.ItemsSource, correctItemsSource);
@@ -94,7 +94,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
             
             filter.ItemsSource.Add(new TestClass { Value = initialValue });
             filter.ItemsSource[0].Value = newValue;
-            filter.ItemsSource.ItemUpdatedAt(0);
+            filter.ItemsSource.ItemUpdateAt(0);
             
             VerifyItems(filter.FilteredItems, correctFilteredItems);
             VerifyItems(filter.ItemsSource, correctItemsSource);

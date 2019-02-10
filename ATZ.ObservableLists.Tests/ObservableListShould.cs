@@ -422,6 +422,56 @@ namespace ATZ.ObservableLists.Tests
             ol.Add(5);
             ol.Should().ContainInOrder(1, 2, 3).And.HaveCount(3);
         }
+
+        [Test]
+        public void SignalCorrectItemUpdateByIndexIfIndexIsValid()
+        {
+            var ol = new ObservableList<int> { 42 };
+            ol.ItemUpdated += (o, e) => e.Index.Should().Be(0);
+
+            var monitor = ol.Monitor();
+            ol.ItemUpdateAt(0);
+
+            monitor.Should().Raise(nameof(ol.ItemUpdated));
+        }
+
+        [Test]
+        public void NotSignalItemUpdateByIndexIfIndexIsInvalid()
+        {
+            var ol = new ObservableList<int>();
+
+            var monitor = ol.Monitor();
+            ol.ItemUpdateAt(-1);
+            
+            monitor.Should().NotRaise(nameof(ol.ItemUpdated));
+            monitor.Clear();
+            
+            ol.ItemUpdateAt(0);
+            monitor.Should().NotRaise(nameof(ol.ItemUpdated));
+        }
+        
+        [Test]
+        public void SignalCorrectItemUpdateByObjectIfPresentInTheList()
+        {
+            var ol = new ObservableList<int> { 42 };
+            ol.ItemUpdated += (o, e) => e.Index.Should().Be(0);
+
+            var monitor = ol.Monitor();
+            ol.ItemUpdate(42);
+
+            monitor.Should().Raise(nameof(ol.ItemUpdated));
+        }
+
+        [Test]
+        public void NotSignalItemUpdatedByObjectIfNotPresentInTheList()
+        {
+            var ol = new ObservableList<int> { 42 };
+
+            var monitor = ol.Monitor();
+            ol.ItemUpdate(0);
+            
+            monitor.Should().NotRaise(nameof(ol.ItemUpdated));
+        }
         #endregion
     }
 }

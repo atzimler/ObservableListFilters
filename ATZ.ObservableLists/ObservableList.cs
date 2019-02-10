@@ -191,8 +191,18 @@ namespace ATZ.ObservableLists
         void IList.Insert(int index, object item) => Insert(index, AssertArgumentIsOfTypeT(item));
         public void Insert(int index, T item) => ProcessChanges(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item , index));
 
-        public void ItemUpdatedAt(int index)
+        public void ItemUpdate(T item)
         {
+            ItemUpdateAt(_items.IndexOf(item));
+        }
+        
+        public void ItemUpdateAt(int index)
+        {
+            if (index < 0 || _items.Count <= index)
+            {
+                return;
+            }
+            
             OnItemUpdated(new ItemUpdatedEventArgs(index));
         }
         
