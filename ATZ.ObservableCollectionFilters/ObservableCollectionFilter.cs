@@ -19,11 +19,6 @@ namespace ATZ.ObservableCollectionFilters
             get => _filterFunction;
             set
             {
-                if (_filterFunction == value)
-                {
-                    return;
-                }
-                
                 _filterFunction = value;
                 FilteredItems.Clear();
             }

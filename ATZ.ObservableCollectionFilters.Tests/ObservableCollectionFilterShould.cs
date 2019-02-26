@@ -501,5 +501,51 @@ namespace ATZ.ObservableCollectionFilters.Tests
             
             filter.FilteredItems.Clear();
         }
+
+        [Test]
+        public void NotCheckFilterFunctionForEquality()
+        {
+            /*
+             * In certain conditions, the filter function can be the same object but still evaluate differently compared
+             * to the previous run, so we should not make any decision based on the equality of the two functions to
+             * reapply the filter to the items or not. Consider the following:
+             *
+             * public class Data
+             * {
+             *     public DateTime DateTime { get; set; }
+             * }
+             * 
+             * private static readonly Data data = new Data();
+             * private static Func<DateTime, bool> F4()
+             * {
+             *     return dt => data.DateTime == dt;
+             * }
+             *
+             * [Test]
+             * public void X4()
+             * {
+             *     Func<DateTime, bool> f1 = F3();
+             *     Func<DateTime, bool> f2 = F3();
+             *     Assert.IsTrue(f1 == f2);
+             * }
+             *
+             * The assertion is passing (the two functions are equal), while between the two actual object creation
+             * nothing stops us from updating the data.DateTime property to a different value. 
+             * */
+
+            // ReSharper disable once ConvertToLocalFunction => No, we want to test this with a Func object.
+            Func<TestClass, bool> filterFunction = _ => true; 
+            
+            var filter = new ObservableCollectionFilter<TestClass>
+            {
+                FilterFunction = filterFunction,
+                ItemsSource = new ObservableList<TestClass>()
+            };
+
+            var monitor = filter.FilteredItems.Monitor();
+
+            filter.FilterFunction = filterFunction;
+            monitor.Should().Raise(nameof(ObservableList<TestClass>.CollectionChanged));
+        }
     }
 }
