@@ -18,7 +18,7 @@
         <DefineConstants>TRACE;JETBRAINS_ANNOTATIONS</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
-      <ProjectReference Include="..\ATZ.ObservableLists\ATZ.ObservableLists.csproj" />
+      <PackageReference Include="ATZ.ObservableLists" Version="1.0.0.11" />
     </ItemGroup>
 
 </Project>

@@ -37,10 +37,6 @@
       <Project>{ac7f8fa1-83be-4f7a-90f8-7cc19b122b52}</Project>
       <Name>ATZ.ObservableCollectionFilters</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ATZ.ObservableLists\ATZ.ObservableLists.csproj">
-      <Project>{df8a6cae-4a5a-4dae-993c-db6d51ca3ca1}</Project>
-      <Name>ATZ.ObservableLists</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ObservableCollectionFilterShould.cs" />
@@ -50,6 +46,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="ATZ.ObservableLists, Version=1.0.0.11, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\..\.nuget\packages\atz.observablelists\1.0.0.11\lib\netstandard1.0\ATZ.ObservableLists.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.3.11.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
