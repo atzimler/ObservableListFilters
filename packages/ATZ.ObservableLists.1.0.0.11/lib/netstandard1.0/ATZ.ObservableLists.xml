@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ATZ.ObservableLists</name>
+    </assembly>
+    <members>
+        <member name="T:ATZ.ObservableLists.ItemUpdatedEventArgs">
+            <summary>
+            Event argument when signalling that an item in the list has been declared to have its state changed while
+            the item remains at the exact same position in the list. This means that the list itself has no changed
+            references.
+            </summary>
+            <remarks>
+            This event has been added beside the standard INotifyCollectionChanged interface, because usually developers
+            try to solve this problem by removing and re-adding the item in question to the list, which in turns may cause
+            extensive reactions to the changes.
+            </remarks>
+        </member>
+        <member name="P:ATZ.ObservableLists.ItemUpdatedEventArgs.Index">
+            <summary>
+            The index of the item changing its state.
+            </summary>
+        </member>
+        <member name="M:ATZ.ObservableLists.ItemUpdatedEventArgs.#ctor(System.Int32)">
+            <param name="index">The index of the item changing its state.</param>
+        </member>
+        <member name="T:ATZ.ObservableLists.ObservableList`1">
+            <summary>
+            List allowing observation of changes via INotifyCollectionChanged. During the collection changed event handler
+            code is allowed to make requests for further changes. These requests will be processed in sequence
+            after the original handler for the first change request executed fully, but only if the conditions are still valid
+            for the change. If values of items to be updated have been changed, item has been moved away or positions became invalid
+            the change request made is ignored and the next change request will be processed until the list settles into a state
+            where no further change requests are present.
+            </summary>
+            <typeparam name="T">The type of elements in the list.</typeparam>
+        </member>
+        <member name="P:ATZ.ObservableLists.ObservableList`1.Item(System.Int32)">
+            <inheritdoc cref="T:System.Collections.Generic.IList`1" />
+        </member>
+        <member name="P:ATZ.ObservableLists.ObservableList`1.Count">
+            <inheritdoc cref="T:System.Collections.Generic.IList`1" />
+        </member>
+        <member name="P:ATZ.ObservableLists.ObservableList`1.IsFixedSize">
+            <inheritdoc />
+        </member>
+        <member name="P:ATZ.ObservableLists.ObservableList`1.IsReadOnly">
+            <inheritdoc cref="T:System.Collections.Generic.ICollection`1" />
+        </member>
+        <member name="P:ATZ.ObservableLists.ObservableList`1.IsSynchronized">
+            <inheritdoc />
+        </member>
+        <member name="P:ATZ.ObservableLists.ObservableList`1.OriginalRequest">
+            <summary>
+            The original request starting the chain of events to be processed.
+            </summary>
+            <remarks>
+            This property can be used to distinguish between change process cycles.
+            </remarks>
+        </member>
+        <member name="P:ATZ.ObservableLists.ObservableList`1.SyncRoot">
+            <summary>
+            Gets an object that can be used to synchronize access to the ICollection.
+            </summary>
+        </member>
+        <member name="E:ATZ.ObservableLists.ObservableList`1.CollectionChanged">
+            <inheritdoc />
+        </member>
+        <member name="E:ATZ.ObservableLists.ObservableList`1.ItemUpdated">
+            <summary>
+            Occurs when an item is declared to have changed state via call to ItemUpdate or ItemUpdateAt functions.
+            </summary>
+        </member>
+        <member name="E:ATZ.ObservableLists.ObservableList`1.PropertyChanged">
+            <inheritdoc />
+        </member>
+        <member name="M:ATZ.ObservableLists.ObservableList`1.OnCollectionChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs)">
+            <summary>
+            Raises the CollectionChanged event with the provided arguments.
+            </summary>
+            <param name="e">Arguments of the event being raised.</param>
+        </member>
+        <member name="M:ATZ.ObservableLists.ObservableList`1.OnItemUpdated(ATZ.ObservableLists.ItemUpdatedEventArgs)">
+            <summary>
+            Raises the ItemUpdated event with the provided arguments.
+            </summary>
+            <param name="e">Arguments of the event being raised.</param>
+        </member>
+        <member name="M:ATZ.ObservableLists.ObservableList`1.OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs)">
+            <summary>
+            Raises the PropertyChanged event with the provided arguments.
+            </summary>
+            <param name="e">Arguments of the event being raised.</param>
+        </member>
+        <member name="M:ATZ.ObservableLists.ObservableList`1.Add(`0)">
+            <inheritdoc />
+            <remarks>The index of the newly added item is determined on addition, so if in a collection change handler
+            the number of items grows before the change is applied, the item is still inserted at the end of the
+            ObservableList&lt;T&gt; when the change is applied.</remarks>
+        </member>
+        <member name="M:ATZ.ObservableLists.ObservableList`1.Clear">
+            <inheritdoc cref="T:System.Collections.Generic.IList`1" />
+        </member>
+        <member name="M:ATZ.ObservableLists.ObservableList`1.Contains(`0)">
+            <inheritdoc />
+        </member>
+        <member name="M:ATZ.ObservableLists.ObservableList`1.CopyTo(System.Array,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:ATZ.ObservableLists.ObservableList`1.CopyTo(`0[],System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:ATZ.ObservableLists.ObservableList`1.GetEnumerator">
+            <inheritdoc />
+        </member>
+        <member name="M:ATZ.ObservableLists.ObservableList`1.IndexOf(`0)">
+            <inheritdoc />
+        </member>
+        <member name="M:ATZ.ObservableLists.ObservableList`1.Insert(System.Int32,`0)">
+            <inheritdoc />
+        </member>
+        <member name="M:ATZ.ObservableLists.ObservableList`1.ItemUpdate(`0)">
+            <summary>
+            Initiate an ItemUpdated event.
+            </summary>
+            <param name="item">The item that changed its state.</param>
+        </member>
+        <member name="M:ATZ.ObservableLists.ObservableList`1.ItemUpdateAt(System.Int32)">
+            <summary>
+            Initiate an ItemUpdated event.
+            </summary>
+            <param name="index">The index of the item that changed its state.</param>
+        </member>
+        <member name="M:ATZ.ObservableLists.ObservableList`1.Move(System.Int32,System.Int32)">
+            <summary>
+            Moves the item at the specified index to a new location in the collection.
+            </summary>
+            <param name="oldIndex">The zero-based index specifying the location of the old item to be moved.</param>
+            <param name="newIndex">The zero-based index specifying the new location of the item.</param>
+            <remarks>If the item is not found at the specified oldIndex position when the request is processed, the request will be ignored.
+            The request is also ignored if oldIndex == newIndex at the time of initiating the request.</remarks>
+        </member>
+        <member name="M:ATZ.ObservableLists.ObservableList`1.Remove(`0)">
+            <inheritdoc />
+            <remarks><see cref="M:ATZ.ObservableLists.ObservableList`1.RemoveAt(System.Int32)" /></remarks>
+        </member>
+        <member name="M:ATZ.ObservableLists.ObservableList`1.RemoveAt(System.Int32)">
+            <inheritdoc cref="T:System.Collections.Generic.IList`1" />
+            <remarks>If the item has been moved from the requested position or has been replaced or removed before the
+            change request is processed, the request will be ignored.</remarks>
+        </member>
+    </members>
+</doc>

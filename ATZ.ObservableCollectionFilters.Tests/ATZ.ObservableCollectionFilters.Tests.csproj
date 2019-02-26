@@ -47,7 +47,8 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ATZ.ObservableLists, Version=1.0.0.11, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\.nuget\packages\atz.observablelists\1.0.0.11\lib\netstandard1.0\ATZ.ObservableLists.dll</HintPath>
+      <HintPath>..\packages\ATZ.ObservableLists.1.0.0.11\lib\netstandard1.0\ATZ.ObservableLists.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.3.11.0\lib\net45\nunit.framework.dll</HintPath>
