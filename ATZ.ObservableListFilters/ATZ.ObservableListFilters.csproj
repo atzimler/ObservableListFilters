@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>netstandard1.0</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Version>1</Version>
         <FileVersion>1</FileVersion>
@@ -12,7 +12,7 @@
         <Description>Library for providing filters on ObservableLists.</Description>
         <Copyright>Copyright (C) 2019</Copyright>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <PackageReleaseNotes>This is a placeholder, please see RELEASENOTES.txt</PackageReleaseNotes>
+        <PackageReleaseNotes>This is a placeholder, please see RELEASENOTES.txt at https://github.com/atzimler/ObservableListFilters/blob/master/ATZ.ObservableListFilters/RELEASENOTES.txt</PackageReleaseNotes>
         <PackageLicenseUrl>https://raw.githubusercontent.com/atzimler/ObservableListFilters/master/LICENSE.txt</PackageLicenseUrl>
         <PackageProjectUrl>https://github.com/atzimler/ObservableListFilters</PackageProjectUrl>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>

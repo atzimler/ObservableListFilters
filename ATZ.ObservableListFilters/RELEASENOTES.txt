@@ -1,3 +1,7 @@
+1.0.2:
+- Decreasing the .NET Standard version to allow wider use.
+- Making the placeholder for the RELEASENOTES.txt more expressive.
+
 1.0.1:
 - Fixed missing Project URL link.
 
