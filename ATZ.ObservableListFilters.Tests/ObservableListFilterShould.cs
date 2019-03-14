@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using ATZ.ObservableLists;
 using FluentAssertions;
 using NUnit.Framework;
@@ -8,38 +6,8 @@ using NUnit.Framework;
 namespace ATZ.ObservableListFilters.Tests
 {
     [TestFixture]
-    public class ObservableCollectionFilterShould
+    public class ObservableListFilterShould : ObservableListFilterTestBase
     {
-        private readonly TestClass[] _items =
-        {
-            new TestClass { Value = 0 },
-            new TestClass { Value = 1 },
-            new TestClass { Value = 2 },
-            new TestClass { Value = 3 },
-            new TestClass { Value = 4 },
-            new TestClass { Value = 5 },
-            new TestClass { Value = 6 },
-            new TestClass { Value = 7 },
-            new TestClass { Value = 8 },
-            new TestClass { Value = 9 }
-        };
-        
-        private ObservableListFilter<TestClass> CreateFilterWithItems(int[] initialValues)
-        {
-            var filter = new ObservableListFilter<TestClass>
-            {
-                FilterFunction = _ => _.Value % 2 == 0,
-                ItemsSource = new ObservableList<TestClass>()
-            };
-
-            foreach (var initialValue in initialValues)
-            {
-                filter.ItemsSource.Add(_items[initialValue]);
-            }
-
-            return filter;
-        }
-
         private void VerifyFilteredItemAddition(
             int[] initialValues, 
             int position, int item, 
@@ -47,7 +15,7 @@ namespace ATZ.ObservableListFilters.Tests
         {
             var filter = CreateFilterWithItems(initialValues);
             
-            filter.FilteredItems.Insert(position, _items[item]);
+            filter.FilteredItems.Insert(position, Items[item]);
             VerifyItems(filter.ItemsSource, correctItemsSource);
             VerifyItems(filter.FilteredItems, correctFilteredItems);
         }
@@ -68,11 +36,6 @@ namespace ATZ.ObservableListFilters.Tests
             VerifyItems(filter.ItemsSource, correctItemsSource);
         }
 
-        private void VerifyItems(IEnumerable<TestClass> items, int[] correctValues)
-        {
-            items.Select(_ => _.Value).Should().ContainInOrder(correctValues).And.HaveCount(correctValues.Length);
-        }
-
         private void VerifySourceItemAddition(
             int[] initialSourceValues, int[] initialFilteredValues, 
             int insertPosition, int insertValue)
@@ -80,7 +43,7 @@ namespace ATZ.ObservableListFilters.Tests
             var filter = CreateFilterWithItems(initialSourceValues);
             VerifyItems(filter.FilteredItems, initialFilteredValues);
         
-            filter.ItemsSource.Insert(insertPosition, _items[insertValue]);
+            filter.ItemsSource.Insert(insertPosition, Items[insertValue]);
             VerifyItems(filter.FilteredItems, new[] { 2, 4, 6 });
         }
 
@@ -257,7 +220,7 @@ namespace ATZ.ObservableListFilters.Tests
         {
             var filter = CreateFilterWithItems(new[] { 2 });
 
-            filter.ItemsSource[0] = _items[4];
+            filter.ItemsSource[0] = Items[4];
             VerifyItems(filter.FilteredItems, new[] { 4 });
         }
 
@@ -266,7 +229,7 @@ namespace ATZ.ObservableListFilters.Tests
         {
             var filter = CreateFilterWithItems(new[] { 1 });
 
-            filter.ItemsSource[0] = _items[4];
+            filter.ItemsSource[0] = Items[4];
             VerifyItems(filter.FilteredItems, new[] { 4 });
         }
 
@@ -275,7 +238,7 @@ namespace ATZ.ObservableListFilters.Tests
         {
             var filter = CreateFilterWithItems(new[] { 2 });
 
-            filter.ItemsSource[0] = _items[1];
+            filter.ItemsSource[0] = Items[1];
             VerifyItems(filter.FilteredItems, Array.Empty<int>());
         }
 
@@ -284,7 +247,7 @@ namespace ATZ.ObservableListFilters.Tests
         {
             var filter = CreateFilterWithItems(new[] { 3 });
 
-            filter.ItemsSource[0] = _items[1];
+            filter.ItemsSource[0] = Items[1];
             VerifyItems(filter.FilteredItems, Array.Empty<int>());
         }
 
@@ -370,7 +333,7 @@ namespace ATZ.ObservableListFilters.Tests
         {
             var filter = CreateFilterWithItems(new[] { 2, 3, 4, 7, 8 });
 
-            filter.FilteredItems[1] = _items[6];
+            filter.FilteredItems[1] = Items[6];
             VerifyItems(filter.FilteredItems, new[] { 2, 6, 8 });
             VerifyItems(filter.ItemsSource, new[] { 2, 3, 6, 7, 8 });
         }
@@ -380,7 +343,7 @@ namespace ATZ.ObservableListFilters.Tests
         {
             var filter = CreateFilterWithItems(new[] { 2, 4, 6 });
 
-            filter.FilteredItems[1] = _items[3];
+            filter.FilteredItems[1] = Items[3];
             VerifyItems(filter.FilteredItems, new[] { 2, 6 });
             VerifyItems(filter.ItemsSource, new[] { 2, 3, 6 });
         }
@@ -414,7 +377,7 @@ namespace ATZ.ObservableListFilters.Tests
                 FilterFunction = null,
                 ItemsSource = new ObservableList<TestClass>()
             };
-            filter.ItemsSource.Add(_items[2]);
+            filter.ItemsSource.Add(Items[2]);
             
             filter.FilteredItems.Clear();
             filter.FilteredItems.Should().BeEmpty();
@@ -461,7 +424,7 @@ namespace ATZ.ObservableListFilters.Tests
                 ItemsSource = null
             };
             
-            filter.FilteredItems.Add(_items[2]);
+            filter.FilteredItems.Add(Items[2]);
             VerifyItems(filter.FilteredItems, Array.Empty<int>());
         }
 
