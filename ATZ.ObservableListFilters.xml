@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project name="ATZ.ObservableListFilters" default="help">
+  <description>Build file for ATZ.ObservableListFilters library.</description>
+
+  <property name="project.name" value="ObservableListFilters" />
+  <include buildfile="../NAnt/ATZ.Build.xml" />
+</project>

@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<project name="ATZ.ObservableCollectionFilters" default="help">
-  <description>Build file for ATZ.ObservableCollectionFilters library.</description>
-
-  <property name="project.name" value="ObservableCollectionFilters" />
-  <include buildfile="../NAnt/ATZ.Build.xml" />
-</project>
