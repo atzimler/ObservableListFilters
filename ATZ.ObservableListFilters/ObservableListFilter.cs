@@ -5,6 +5,10 @@ using ATZ.ObservableLists;
 
 namespace ATZ.ObservableListFilters
 {
+    /// <summary>
+    /// Class to filter observable list items.
+    /// </summary>
+    /// <typeparam name="TItem">The type of the items in the ObservableList.</typeparam>
     public class ObservableListFilter<TItem>
         where TItem : class
     {
@@ -14,6 +18,10 @@ namespace ATZ.ObservableListFilters
         private ObservableList<TItem> _itemsSource;
         private readonly Dictionary<NotifyCollectionChangedAction, Action<NotifyCollectionChangedEventArgs>> _sourceCollectionChangeHandlers;
 
+        /// <summary>
+        /// Function to determine if the item should appear in the filtered result (true) or not (false).
+        /// </summary>
+        /// <remarks>Setting the function triggers to re-evaluate the filter for all items. If the value is null, no item passes the filter.</remarks>
         public Func<TItem, bool> FilterFunction
         {
             get => _filterFunction;
@@ -24,8 +32,75 @@ namespace ATZ.ObservableListFilters
             }
         }
         
+        /// <summary>
+        /// The items from the ItemsSource collection that passed through the filter.
+        /// </summary>
+        /// <remarks>
+        ///     <list type="bullet">
+        ///         <listheader><description>Changes applied to this list causes the following effects:</description></listheader>
+        ///         <item>
+        ///             <term>Add</term>
+        ///             <description>The item is inserted at the translated position into the ItemsSource.
+        ///                 Then, if the item is not passing the filter it is removed from the FilteredItems collection.
+        ///             </description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Move</term>
+        ///             <description>The item is moved accordingly to the translated position in the ItemsSource.</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Remove</term>
+        ///             <description>The item is also removed from the ItemsSource.</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Replace</term>
+        ///             <description>Replaces the item in the ItemsSource too.
+        ///                 If the replacement item is not passing the filter function, it is then removed from the FilteredItems.
+        ///             </description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Reset</term>
+        ///             <describe>(by calling the Clear() method). Rebuilds the items from the ItemsSource into the FilteredItems.
+        ///                 If you want to remove all items, call Clear() on the ItemsSource instead.</describe>
+        ///         </item>
+        ///     </list>
+        /// </remarks>
         public ObservableList<TItem> FilteredItems { get; } = new ObservableList<TItem>();
 
+        /// <summary>
+        /// The items to filter from.
+        /// </summary>
+        /// <remarks>
+        ///     <list type="bullet">
+        ///         <listheader><description>Changes applied to this list causes the following effects:</description></listheader>
+        ///         <item>
+        ///             <term>Changing the collection object</term>
+        ///             <description>Re-evaluates the filter and updates the FilteredItems.</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Add</term>
+        ///             <description>If the new item passes the FilterFunction, it is also added at appropriate position to the FilteredItems</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Move</term>
+        ///             <description>If the item passes the FilterFunction, it is moved according to the move in the FilteredItems too.</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Remove</term>
+        ///             <description>The item is also removed from the FilteredItems if present.</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Replace</term>
+        ///             <description>After replacing the item in the ItemsSource, it is re-evaluated. If the item is passing the FilterFunction,
+        ///                 the new item it is inserted or updated (based on if it was present before). If the item is not passing the FilterFunction,
+        ///                 it will not be placed into the FilteredItems or if present it will be removed.</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Reset</term>
+        ///             <description>(by calling the Clear() method). Also clears the FilteredItems.</description>
+        ///         </item>
+        ///     </list>
+        /// </remarks>
         public ObservableList<TItem> ItemsSource
         {
             get => _itemsSource;
@@ -54,6 +129,9 @@ namespace ATZ.ObservableListFilters
             }
         }
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public ObservableListFilter()
         {
             _sourceCollectionChangeHandlers = new Dictionary<NotifyCollectionChangedAction,Action<NotifyCollectionChangedEventArgs>>
