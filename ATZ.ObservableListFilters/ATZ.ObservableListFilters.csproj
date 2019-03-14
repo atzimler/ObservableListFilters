@@ -14,6 +14,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageReleaseNotes>This is a placeholder, please see RELEASENOTES.txt</PackageReleaseNotes>
         <PackageLicenseUrl>https://raw.githubusercontent.com/atzimler/ObservableListFilters/master/LICENSE.txt</PackageLicenseUrl>
+        <PackageProjectUrl>https://github.com/atzimler/ObservableListFilters</PackageProjectUrl>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
