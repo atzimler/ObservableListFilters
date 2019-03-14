@@ -8,8 +8,8 @@
     <ProjectGuid>{740E054A-80DA-4B76-BD2C-552775E5A598}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ATZ.ObservableCollectionFilters.Tests</RootNamespace>
-    <AssemblyName>ATZ.ObservableCollectionFilters.Tests</AssemblyName>
+    <RootNamespace>ATZ.ObservableListFilters.Tests</RootNamespace>
+    <AssemblyName>ATZ.ObservableListFilters.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -33,12 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ATZ.ObservableCollectionFilters\ATZ.ObservableCollectionFilters.csproj">
-      <Project>{ac7f8fa1-83be-4f7a-90f8-7cc19b122b52}</Project>
-      <Name>ATZ.ObservableCollectionFilters</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="ObservableCollectionFilterShould.cs" />
     <Compile Include="TestClass.cs" />
   </ItemGroup>
@@ -59,6 +53,12 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ATZ.ObservableListFilters\ATZ.ObservableListFilters.csproj">
+      <Project>{ac7f8fa1-83be-4f7a-90f8-7cc19b122b52}</Project>
+      <Name>ATZ.ObservableListFilters</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

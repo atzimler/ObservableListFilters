@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using ATZ.ObservableCollectionFilters;
 using ATZ.ObservableLists;
 
-namespace ATZ.ObservableCollectionFilters
+namespace ATZ.ObservableListFilters
 {
-    public class ObservableCollectionFilter<TItem>
+    public class ObservableListFilter<TItem>
         where TItem : class
     {
         private readonly Dictionary<NotifyCollectionChangedAction, Action<NotifyCollectionChangedEventArgs>> _filterCollectionChangeHandlers;
@@ -54,7 +55,7 @@ namespace ATZ.ObservableCollectionFilters
             }
         }
 
-        public ObservableCollectionFilter()
+        public ObservableListFilter()
         {
             _sourceCollectionChangeHandlers = new Dictionary<NotifyCollectionChangedAction,Action<NotifyCollectionChangedEventArgs>>
             {

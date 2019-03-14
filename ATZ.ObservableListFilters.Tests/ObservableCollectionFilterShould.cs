@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ATZ.ObservableCollectionFilters.Tests;
 using ATZ.ObservableLists;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace ATZ.ObservableCollectionFilters.Tests
+namespace ATZ.ObservableListFilters.Tests
 {
     [TestFixture]
     public class ObservableCollectionFilterShould
@@ -24,9 +25,9 @@ namespace ATZ.ObservableCollectionFilters.Tests
             new TestClass { Value = 9 }
         };
         
-        private ObservableCollectionFilter<TestClass> CreateFilterWithItems(int[] initialValues)
+        private ObservableListFilter<TestClass> CreateFilterWithItems(int[] initialValues)
         {
-            var filter = new ObservableCollectionFilter<TestClass>
+            var filter = new ObservableListFilter<TestClass>
             {
                 FilterFunction = _ => _.Value % 2 == 0,
                 ItemsSource = new ObservableList<TestClass>()
@@ -54,7 +55,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
 
         private void VerifyFilteredItemUpdate(int newValue, int[] correctItemsSource, int[] correctFilteredItems)
         {
-            var filter = new ObservableCollectionFilter<TestClass>
+            var filter = new ObservableListFilter<TestClass>
             {
                 FilterFunction = _ => _.Value % 2 == 0,
                 ItemsSource = new ObservableList<TestClass>()
@@ -86,7 +87,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
 
         private void VerifyItemsSourceItemUpdate(int initialValue, int newValue, int[] correctItemsSource, int[] correctFilteredItems)
         {
-            var filter = new ObservableCollectionFilter<TestClass>
+            var filter = new ObservableListFilter<TestClass>
             {
                 FilterFunction = _ => _.Value % 2 == 0,
                 ItemsSource = new ObservableList<TestClass>()
@@ -103,13 +104,13 @@ namespace ATZ.ObservableCollectionFilters.Tests
         [Test]
         public void BeConstructable()
         {
-            var unused = new ObservableCollectionFilter<object>();
+            var unused = new ObservableListFilter<object>();
         }
 
         [Test]
         public void HaveDefaultFilterAsNotNull()
         {
-            var filter = new ObservableCollectionFilter<object>();
+            var filter = new ObservableListFilter<object>();
             filter.FilterFunction.Should().NotBeNull();
         }
 
@@ -119,7 +120,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
             // ReSharper disable once ConvertToLocalFunction => Does not help in this case.
             Func<object, bool> ff = x => true;
             
-            var filter = new ObservableCollectionFilter<object>();
+            var filter = new ObservableListFilter<object>();
             filter.FilterFunction.Should().NotBe(ff);
 
             filter.FilterFunction = ff;
@@ -131,7 +132,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
         {
             var itemsSource = new ObservableList<object>();
             
-            var filter = new ObservableCollectionFilter<object>();
+            var filter = new ObservableListFilter<object>();
             filter.ItemsSource.Should().BeNull();
 
             filter.ItemsSource = itemsSource;
@@ -141,7 +142,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
         [Test]
         public void DefaultFilteredSourceToEmpty()
         {
-            var filter = new ObservableCollectionFilter<object>();
+            var filter = new ObservableListFilter<object>();
             filter.FilteredItems.Should().BeEmpty();
         }
 
@@ -150,7 +151,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
         {
             var itemsSource = new ObservableList<TestClass>();
 
-            var filter = new ObservableCollectionFilter<TestClass>
+            var filter = new ObservableListFilter<TestClass>
             {
                 FilterFunction = _ => _.Value % 2 == 0,
                 ItemsSource = itemsSource
@@ -166,7 +167,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
         {
             var itemsSource = new ObservableList<TestClass>();
 
-            var filter = new ObservableCollectionFilter<TestClass>
+            var filter = new ObservableListFilter<TestClass>
             {
                 FilterFunction = _ => _.Value % 2 == 0,
                 ItemsSource = itemsSource
@@ -180,7 +181,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
         [Test]
         public void AddItemToCorrectLocationWhenAllItemsAreMatchingFilter()
         {
-            var filter = new ObservableCollectionFilter<TestClass>
+            var filter = new ObservableListFilter<TestClass>
             {
                 ItemsSource = new ObservableList<TestClass>()
             };
@@ -398,7 +399,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
         [Test]
         public void NotCrashWhenItemsSourceIsNullAndFilteredItemsIsCleared()
         {
-            var filter = new ObservableCollectionFilter<TestClass>();
+            var filter = new ObservableListFilter<TestClass>();
             filter.FilterFunction.Should().NotBeNull();
             filter.ItemsSource.Should().BeNull();
 
@@ -409,7 +410,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
         [Test]
         public void NotCrashWhenFilterFunctionIsNullAndFilteredItemsIsCleared()
         {
-            var filter = new ObservableCollectionFilter<TestClass>
+            var filter = new ObservableListFilter<TestClass>
             {
                 FilterFunction = null,
                 ItemsSource = new ObservableList<TestClass>()
@@ -455,7 +456,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
         [Test]
         public void NotAddToTheFilterWhenItemsSourceIsNull()
         {
-            var filter = new ObservableCollectionFilter<TestClass>
+            var filter = new ObservableListFilter<TestClass>
             {
                 FilterFunction = _ => _.Value % 2 == 0,
                 ItemsSource = null
@@ -468,7 +469,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
         [Test]
         public void RebuildFilteredItemsOnFilterFunctionChange()
         {
-            var filter = new ObservableCollectionFilter<TestClass>
+            var filter = new ObservableListFilter<TestClass>
             {
                 FilterFunction = _ => _.Value % 2 == 0,
                 ItemsSource = new ObservableList<TestClass>()
@@ -488,7 +489,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
         [Test]
         public void BeAbleToFunctionWithMultipleObservers()
         {
-            var filter = new ObservableCollectionFilter<TestClass>
+            var filter = new ObservableListFilter<TestClass>
             {
                 FilterFunction = _ => _.Value % 2 == 0,
                 ItemsSource = new ObservableList<TestClass> { new TestClass { Value =  2 }}
@@ -536,7 +537,7 @@ namespace ATZ.ObservableCollectionFilters.Tests
             // ReSharper disable once ConvertToLocalFunction => No, we want to test this with a Func object.
             Func<TestClass, bool> filterFunction = _ => true; 
             
-            var filter = new ObservableCollectionFilter<TestClass>
+            var filter = new ObservableListFilter<TestClass>
             {
                 FilterFunction = filterFunction,
                 ItemsSource = new ObservableList<TestClass>()
