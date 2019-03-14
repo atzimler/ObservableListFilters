@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ATZ.ObservableCollectionFilters.Tests;
 using ATZ.ObservableLists;
 using FluentAssertions;
 using NUnit.Framework;

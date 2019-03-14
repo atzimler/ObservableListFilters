@@ -1,8 +1,8 @@
 using System;
 
-namespace ATZ.ObservableCollectionFilters
+namespace ATZ.ObservableListFilters
 {
-    public class InternalChange
+    internal class InternalChange
     {
         private bool _executing;
 

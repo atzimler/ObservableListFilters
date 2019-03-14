@@ -1,4 +1,4 @@
-namespace ATZ.ObservableCollectionFilters.Tests
+namespace ATZ.ObservableListFilters.Tests
 {
     public class TestClass
     {
